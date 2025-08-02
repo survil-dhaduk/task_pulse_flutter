@@ -1,0 +1,394 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Flutter Project and Folder Structure",
+        "description": "Initialize the Flutter project with the necessary configurations and folder structure as outlined in the PRD, including setting up the core and feature directories.",
+        "details": "1.  Create a new Flutter project: `flutter create task_pulse`\n2.  Create the core and feature directories inside `lib/`.\n3.  Inside `lib/features/`, create the `task_management` directory.\n4.  Inside `task_management`, create `data`, `domain`, and `presentation` directories.\n5.  Update `pubspec.yaml` with initial dependencies: `flutter_bloc`, `hive`, `flutter_local_notifications`, `get_it`, `dartz`. Use the latest stable versions.\n6.  Configure Flutter environment for Android and iOS platforms.",
+        "testStrategy": "Verify the folder structure is correctly set up and the `pubspec.yaml` file contains the required dependencies. Run `flutter pub get` to ensure all dependencies are fetched successfully.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Configure Dependency Injection (GetIt)",
+        "description": "Set up dependency injection using `get_it` to manage dependencies across the application. This includes registering core services and repositories.",
+        "details": "1.  Add `get_it` as a dependency in `pubspec.yaml`.\n2.  Create a `service_locator.dart` file in the `core` directory.\n3.  Initialize `GetIt` instance.\n4.  Register core services (e.g., Hive service) as singletons.\n5.  Register repositories as singletons or factories as needed.\n\nExample:\n```dart\nfinal sl = GetIt.instance;\n\nFuture<void> init() async {\n  // Services\n  sl.registerSingleton<HiveService>(HiveServiceImpl());\n\n  // Repositories\n  sl.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl(hiveService: sl()));\n}\n```",
+        "testStrategy": "Write unit tests to verify that dependencies are correctly registered and can be resolved using `GetIt.instance.get<DependencyType>()`.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Define Task Entity",
+        "description": "Define the core data models (entities) for the task management feature, including `Task` with properties like title, description, dueDate, priority, and completion status.",
+        "details": "1.  Create a `task.dart` file in `lib/features/task_management/domain/entities/`.\n2.  Define the `Task` class with necessary properties.\n3.  Implement `Equatable` for easy comparison of `Task` instances.\n\nExample:\n```dart\nclass Task extends Equatable {\n  final String id;\n  final String title;\n  final String description;\n  final DateTime dueDate;\n  final Priority priority;\n  final bool isCompleted;\n\n  const Task({\n    required this.id,\n    required this.title,\n    required this.description,\n    required this.dueDate,\n    required this.priority,\n    required this.isCompleted,\n  });\n\n  @override\n  List<Object?> get props => [id, title, description, dueDate, priority, isCompleted];\n}\n```",
+        "testStrategy": "Write unit tests to ensure that `Task` objects can be created, their properties can be accessed, and `Equatable` is correctly implemented.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Task Use Cases",
+        "description": "Implement use cases for task management, such as `CreateTask`, `UpdateTask`, `DeleteTask`, `GetTasks`, and `ToggleTaskCompletion`. Each use case should encapsulate a specific business logic.",
+        "details": "1.  Create a `usecases` directory in `lib/features/task_management/domain/`.\n2.  Create separate files for each use case (e.g., `create_task.dart`, `get_tasks.dart`).\n3.  Each use case should implement a `call()` method that executes the business logic.\n4.  Use `dartz` for handling success and failure scenarios.\n\nExample:\n```dart\nclass CreateTask {\n  final TaskRepository repository;\n\n  CreateTask(this.repository);\n\n  Future<Either<Failure, void>> call(Task task) async {\n    return repository.createTask(task);\n  }\n}\n```",
+        "testStrategy": "Write unit tests for each use case to verify that they correctly interact with the repository and return the expected results (either success or failure).",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Task Repository with Hive",
+        "description": "Define the `TaskRepository` interface in the domain layer, which outlines the methods for interacting with task data. Implement the `TaskRepositoryImpl` in the data layer using Hive for local persistence.",
+        "details": "1.  Create `task_repository.dart` in `lib/features/task_management/domain/repositories/` and define the `TaskRepository` interface.\n2.  Create `task_repository_impl.dart` in `lib/features/task_management/data/repositories/` and implement the `TaskRepository` interface.\n3.  Use Hive to store and retrieve task data.\n4.  Implement methods for creating, reading, updating, deleting, and toggling task completion.\n\nExample:\n```dart\nclass TaskRepositoryImpl implements TaskRepository {\n  final HiveService hiveService;\n\n  TaskRepositoryImpl({required this.hiveService});\n\n  @override\n  Future<Either<Failure, void>> createTask(Task task) async {\n    try {\n      await hiveService.addTask(task);\n      return const Right(null);\n    } catch (e) {\n      return Left(DatabaseFailure(message: e.toString()));\n    }\n  }\n}\n```",
+        "testStrategy": "Write unit tests to verify that `TaskRepositoryImpl` correctly interacts with Hive, stores and retrieves data accurately, and handles potential errors.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define TaskRepository Interface",
+            "description": "Create `task_repository.dart` in `lib/features/task_management/domain/repositories/` and define the `TaskRepository` interface with methods for task data interaction.",
+            "dependencies": [],
+            "details": "Define methods like `createTask`, `readTask`, `updateTask`, `deleteTask`, and `toggleTaskCompletion` within the `TaskRepository` interface.",
+            "status": "done",
+            "testStrategy": "Write unit tests to ensure the interface methods are correctly defined and can be implemented."
+          },
+          {
+            "id": 2,
+            "title": "Implement TaskRepositoryImpl with Hive",
+            "description": "Create `task_repository_impl.dart` in `lib/features/task_management/data/repositories/` and implement the `TaskRepository` interface using Hive for local persistence.",
+            "dependencies": [],
+            "details": "Implement the methods defined in `TaskRepository` using Hive to store and retrieve task data. Inject `HiveService`.",
+            "status": "done",
+            "testStrategy": "Write unit tests to verify that `TaskRepositoryImpl` correctly interacts with Hive, stores and retrieves data accurately, and handles potential errors."
+          },
+          {
+            "id": 3,
+            "title": "Implement Create Task Method",
+            "description": "Implement the `createTask` method in `TaskRepositoryImpl` to persist a new task to Hive.",
+            "dependencies": [],
+            "details": "Use Hive's box operations to add a new task object to the designated Hive box.",
+            "status": "done",
+            "testStrategy": "Write unit tests to verify that the `createTask` method correctly adds a task to Hive and returns a `Right` on success or a `Left` with a `Failure` on error."
+          },
+          {
+            "id": 4,
+            "title": "Implement Read, Update, Delete, and Toggle Methods",
+            "description": "Implement the `readTask`, `updateTask`, `deleteTask`, and `toggleTaskCompletion` methods in `TaskRepositoryImpl` using Hive.",
+            "dependencies": [],
+            "details": "Use Hive's box operations to read, update, delete, and toggle the completion status of tasks based on their unique identifiers.",
+            "status": "done",
+            "testStrategy": "Write unit tests to verify that each method correctly interacts with Hive and returns a `Right` on success or a `Left` with a `Failure` on error."
+          },
+          {
+            "id": 5,
+            "title": "Handle Hive Exceptions",
+            "description": "Implement error handling within `TaskRepositoryImpl` to catch and manage potential Hive exceptions.",
+            "dependencies": [],
+            "details": "Wrap Hive operations in try-catch blocks to handle exceptions and return appropriate `Failure` objects (e.g., `DatabaseFailure`).",
+            "status": "done",
+            "testStrategy": "Write unit tests to simulate Hive exceptions and verify that the `TaskRepositoryImpl` correctly catches and handles them, returning the expected `Failure` objects."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Task BLoC",
+        "description": "Implement BLoC for state management in the presentation layer. Create `TaskBloc` to handle task-related events and states, such as loading tasks, creating tasks, updating tasks, and deleting tasks.",
+        "details": "1.  Add `flutter_bloc` as a dependency in `pubspec.yaml`.\n2.  Create `task_bloc.dart` in `lib/features/task_management/presentation/bloc/`.\n3.  Define events (e.g., `LoadTasks`, `CreateTask`, `UpdateTask`, `DeleteTask`) and states (e.g., `TaskLoading`, `TaskLoaded`, `TaskError`).\n4.  Implement event handlers to interact with use cases and emit appropriate states.\n\nExample:\n```dart\nclass TaskBloc extends Bloc<TaskEvent, TaskState> {\n  final GetTasks getTasks;\n  final CreateTask createTask;\n  final UpdateTask updateTask;\n  final DeleteTask deleteTask;\n\n  TaskBloc({\n    required this.getTasks,\n    required this.createTask,\n    required this.updateTask,\n    required this.deleteTask,\n  }) : super(TaskLoading()) {\n    on<LoadTasks>((event, emit) async {\n      emit(TaskLoading());\n      final result = await getTasks();\n      result.fold(\n        (failure) => emit(TaskError(message: failure.message)),\n        (tasks) => emit(TaskLoaded(tasks: tasks)),\n      );\n    });\n  }\n}\n```",
+        "testStrategy": "Write BLoC tests to verify that the `TaskBloc` correctly handles events, interacts with use cases, and emits the expected states. Use `bloc_test` package for testing.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Task Events",
+            "description": "Define all necessary events for the TaskBloc, including LoadTasks, CreateTask, UpdateTask, and DeleteTask. Ensure each event class properly encapsulates any required data.",
+            "dependencies": [],
+            "details": "Create concrete event classes extending a base TaskEvent abstract class.  Each event should carry the necessary data (e.g., Task object for CreateTask, Task ID for DeleteTask).\n<info added on 2025-08-02T13:34:42.268Z>\n✅ COMPLETED: Defined all necessary events for the TaskBloc including LoadTasks, CreateTask, UpdateTask, DeleteTask, ToggleTaskCompletion, SearchTasks, and GetTasksByPriority. Each event properly encapsulates required data (Task objects for CreateTask/UpdateTask, taskId for DeleteTask/ToggleTaskCompletion, query for SearchTasks, priority for GetTasksByPriority). Created task_event.dart with abstract TaskEvent base class and concrete event implementations using Equatable for proper comparison.\n</info added on 2025-08-02T13:34:42.268Z>",
+            "status": "done",
+            "testStrategy": "Write unit tests to ensure each event class can be instantiated with the correct data types."
+          },
+          {
+            "id": 2,
+            "title": "Define Task States",
+            "description": "Define all possible states for the TaskBloc, including TaskLoading, TaskLoaded (with a list of tasks), and TaskError (with an error message).",
+            "dependencies": [],
+            "details": "Create concrete state classes extending a base TaskState abstract class. The TaskLoaded state should contain a List<Task>. The TaskError state should contain an error message string.\n<info added on 2025-08-02T13:34:47.115Z>\nDefined all possible states for the TaskBloc including TaskLoading, TaskLoaded (with List<Task>), TaskError (with error message), TaskOperationInProgress, TaskSearching, TaskSearchResults, and TaskFilteredByPriority. Created task_state.dart with abstract TaskState base class and concrete state implementations using Equatable. Each state properly encapsulates the required data and provides meaningful state transitions for the UI.\n</info added on 2025-08-02T13:34:47.115Z>",
+            "status": "done",
+            "testStrategy": "Write unit tests to ensure each state class can be instantiated with the correct data types."
+          },
+          {
+            "id": 3,
+            "title": "Implement LoadTasks Event Handler",
+            "description": "Implement the event handler for the LoadTasks event. This handler should call the GetTasks use case, and emit either TaskLoaded (on success) or TaskError (on failure).",
+            "dependencies": [],
+            "details": "Within the TaskBloc, use the 'on<LoadTasks>' method to register the handler. Call the GetTasks use case and use the 'fold' method on the result to handle both success and failure scenarios. Emit TaskLoading state before calling the use case.\n<info added on 2025-08-02T13:34:51.911Z>\nImplemented the LoadTasks event handler in TaskBloc. The handler correctly calls the GetTasks use case using the fold method to handle both success and failure scenarios. Emits TaskLoading state before calling the use case, then emits either TaskLoaded (with tasks) or TaskError (with failure message) based on the result. Used proper async/await pattern and error handling.\n</info added on 2025-08-02T13:34:51.911Z>",
+            "status": "done",
+            "testStrategy": "Write bloc tests to verify that the LoadTasks event handler correctly calls the GetTasks use case, emits TaskLoading initially, and then emits either TaskLoaded or TaskError based on the use case result."
+          },
+          {
+            "id": 4,
+            "title": "Implement CreateTask, UpdateTask, and DeleteTask Event Handlers",
+            "description": "Implement the event handlers for the CreateTask, UpdateTask, and DeleteTask events. These handlers should call the corresponding use cases (CreateTask, UpdateTask, DeleteTask) and emit either TaskLoaded (after refreshing the task list) or TaskError (on failure).",
+            "dependencies": [],
+            "details": "Within the TaskBloc, use the 'on<CreateTask>', 'on<UpdateTask>', and 'on<DeleteTask>' methods to register the handlers. Call the corresponding use cases and use the 'fold' method on the result to handle both success and failure scenarios. After a successful operation, call the GetTasks use case and emit TaskLoaded with the updated task list.\n<info added on 2025-08-02T13:34:56.744Z>\n✅ COMPLETED: Implemented all event handlers for CreateTask, UpdateTask, and DeleteTask in TaskBloc. Each handler correctly calls the corresponding use case and uses the fold method to handle success/failure scenarios. After successful operations, the handlers refresh the task list by calling GetTasks and emit TaskLoaded with the updated list. Implemented proper state management with TaskOperationInProgress for better UX during operations.\n</info added on 2025-08-02T13:34:56.744Z>",
+            "status": "done",
+            "testStrategy": "Write bloc tests to verify that each event handler correctly calls the corresponding use case, and emits either TaskLoaded or TaskError based on the use case result. Verify that GetTasks is called after successful creation, update, or deletion."
+          },
+          {
+            "id": 5,
+            "title": "Integrate TaskBloc in Task List UI",
+            "description": "Integrate the TaskBloc into the Task List UI (Task 7) using BlocProvider and BlocBuilder. Ensure the UI updates correctly based on the TaskBloc's state.",
+            "dependencies": [],
+            "details": "Wrap the TaskListScreen with a BlocProvider to provide an instance of TaskBloc. Use BlocBuilder within the TaskListScreen to rebuild the UI based on the TaskBloc's state (TaskLoading, TaskLoaded, TaskError). Dispatch LoadTasks event when the screen is initialized.\n<info added on 2025-08-02T13:35:05.235Z>\n✅ COMPLETED: Integrated TaskBloc into the service locator for dependency injection. Registered all use cases (GetTasks, CreateTask, UpdateTask, DeleteTask, ToggleTaskCompletion, SearchTasks, GetTasksByPriority) and the TaskBloc itself in the service locator. Created barrel file (bloc.dart) for clean exports. The TaskBloc is now ready to be used in UI components with BlocProvider and BlocBuilder for proper state management integration.\n</info added on 2025-08-02T13:35:05.235Z>",
+            "status": "done",
+            "testStrategy": "Write widget tests to verify that the TaskListScreen displays the correct UI based on the TaskBloc's state. Verify that the task list is displayed when TaskLoaded is emitted, a loading indicator is displayed when TaskLoading is emitted, and an error message is displayed when TaskError is emitted."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Task List UI",
+        "description": "Implement the UI for displaying the task list, including slidable actions for editing and deleting tasks. Use Material Design 3 for a modern look and feel.",
+        "details": "1.  Create a `task_list_screen.dart` file in `lib/features/task_management/presentation/pages/`.\n2.  Use `ListView.builder` to display the list of tasks.\n3.  Implement slidable actions using a package like `flutter_slidable`.\n4.  Use `BlocBuilder` to connect the UI with the `TaskBloc`.\n5.  Implement Material Design 3 components for a modern UI.",
+        "testStrategy": "Write widget tests to verify that the task list is displayed correctly, slidable actions work as expected, and the UI updates based on the BLoC state.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create task_list_screen.dart",
+            "description": "Create the task_list_screen.dart file in lib/features/task_management/presentation/pages/.",
+            "dependencies": [],
+            "details": "Create a new Dart file named `task_list_screen.dart` in the specified directory. This file will contain the UI implementation for displaying the task list.",
+            "status": "done",
+            "testStrategy": "Verify that the file is created in the correct directory."
+          },
+          {
+            "id": 2,
+            "title": "Implement ListView.builder for task display",
+            "description": "Use ListView.builder to efficiently display the list of tasks.",
+            "dependencies": [],
+            "details": "Implement `ListView.builder` within `task_list_screen.dart` to dynamically render the list of tasks. Ensure that each task item is displayed correctly with relevant information (e.g., title, description, due date).",
+            "status": "done",
+            "testStrategy": "Write widget tests to verify that the task list is displayed correctly and that the number of items matches the number of tasks in the data source."
+          },
+          {
+            "id": 3,
+            "title": "Implement slidable actions",
+            "description": "Implement slidable actions for editing and deleting tasks using a package like flutter_slidable.",
+            "dependencies": [],
+            "details": "Integrate the `flutter_slidable` package to add slidable actions to each task item. Implement actions for editing and deleting tasks. Ensure that these actions trigger the appropriate events in the `TaskBloc`.",
+            "status": "done",
+            "testStrategy": "Write widget tests to verify that the slidable actions are displayed correctly and that they trigger the expected events when swiped."
+          },
+          {
+            "id": 4,
+            "title": "Connect UI with TaskBloc using BlocBuilder",
+            "description": "Use BlocBuilder to connect the UI with the TaskBloc and update the UI based on the BLoC state.",
+            "dependencies": [],
+            "details": "Wrap the `ListView.builder` with a `BlocBuilder` to listen to the `TaskBloc`'s state changes. Update the UI based on the emitted states (e.g., `TaskLoading`, `TaskLoaded`, `TaskError`). Display appropriate loading indicators or error messages when necessary.",
+            "status": "done",
+            "testStrategy": "Write widget tests to verify that the UI updates correctly based on different BLoC states (e.g., loading, loaded, error)."
+          },
+          {
+            "id": 5,
+            "title": "Implement Material Design 3 components",
+            "description": "Implement Material Design 3 components for a modern UI.",
+            "dependencies": [],
+            "details": "Use Material Design 3 components (e.g., `Card`, `ListTile`, `IconButton`) to style the task list UI. Ensure that the UI adheres to Material Design 3 guidelines for visual appearance and user experience.",
+            "status": "done",
+            "testStrategy": "Visually inspect the UI to ensure that it conforms to Material Design 3 specifications. Verify that the colors, typography, and spacing are consistent with the design guidelines."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Task Creation/Edit UI",
+        "description": "Implement the UI for creating and editing tasks, including input fields for title, description, due date, and priority. Use appropriate date/time pickers and priority badges.",
+        "details": "1.  Create a `task_form_screen.dart` file in `lib/features/task_management/presentation/pages/`.\n2.  Use `TextFormField` widgets for input fields.\n3.  Use `showDatePicker` and `showTimePicker` for date and time selection.\n4.  Implement priority selection using radio buttons or dropdown.\n5.  Use `BlocProvider` and `BlocBuilder` to manage the form state and interact with the `TaskBloc`.",
+        "testStrategy": "Write widget tests to verify that the task form is displayed correctly, input fields accept valid data, and the form submits data to the `TaskBloc` correctly.",
+        "priority": "high",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Local Notifications",
+        "description": "Implement local notifications using the `flutter_local_notifications` package to schedule reminders for task due dates. Configure the notification settings and schedule notifications when tasks are created or updated.",
+        "details": "1.  Add `flutter_local_notifications` as a dependency in `pubspec.yaml`.\n2.  Initialize the `FlutterLocalNotificationsPlugin`.\n3.  Request notification permissions from the user.\n4.  Schedule notifications when tasks are created or updated, using the task's due date and time.\n\nExample:\n```dart\nfinal FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();\n\nFuture<void> scheduleNotification(Task task) async {\n  await flutterLocalNotificationsPlugin.zonedSchedule(\n    task.id.hashCode, // Use a unique ID for each notification\n    task.title,\n    task.description,\n    tz.TZDateTime.from(task.dueDate, tz.local),\n    const NotificationDetails(\n      android: AndroidNotificationDetails(\n        'task_channel',\n        'Task Notifications',\n        channelDescription: 'Notifications for task reminders',\n      ),\n    ),\n    androidAllowWhileIdle: true,\n    uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,\n  );\n}\n```",
+        "testStrategy": "Write integration tests to verify that notifications are scheduled correctly when tasks are created or updated, and that the notifications are displayed at the correct time.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Task Sorting and Filtering",
+        "description": "Implement sorting and filtering of tasks by status (completed/incomplete) and sorting by date or priority. Update the task list UI to reflect the applied filters and sorting options.",
+        "details": "1.  Add sorting and filtering options in the task list UI (e.g., dropdown menus, checkboxes).\n2.  Update the `TaskBloc` to handle sorting and filtering events.\n3.  Modify the `getTasks` use case to apply the selected filters and sorting options.\n4.  Update the task list UI to display the filtered and sorted tasks.",
+        "testStrategy": "Write widget tests to verify that the sorting and filtering options are displayed correctly, and that the task list updates based on the selected options.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Task Search",
+        "description": "Implement task searching by title or description. Update the task list UI to display the search results.",
+        "details": "1.  Add a search bar in the task list UI.\n2.  Update the `TaskBloc` to handle search events.\n3.  Modify the `getTasks` use case to filter tasks based on the search query.\n4.  Update the task list UI to display the search results.",
+        "testStrategy": "Write widget tests to verify that the search bar is displayed correctly, and that the task list updates based on the search query.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Light/Dark Mode",
+        "description": "Implement light/dark mode theme switching based on system settings. Use `ThemeMode.system` to automatically switch between light and dark themes.",
+        "details": "1.  Use `ThemeData` to define light and dark themes.\n2.  Use `MaterialApp` to set the initial theme and theme mode.\n3.  Set `themeMode` to `ThemeMode.system` to automatically switch between light and dark themes based on system settings.",
+        "testStrategy": "Manually test the theme switching by changing the system theme settings and verifying that the app theme updates accordingly.",
+        "priority": "low",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Responsive Design",
+        "description": "Ensure the UI is responsive and supports all screen sizes. Use `LayoutBuilder` and `MediaQuery` to adapt the UI to different screen sizes.",
+        "details": "1.  Use `LayoutBuilder` to get the screen size.\n2.  Use `MediaQuery` to get the device's screen size and orientation.\n3.  Adjust the UI layout and font sizes based on the screen size and orientation.",
+        "testStrategy": "Test the UI on different screen sizes and orientations to ensure that it is responsive and adapts correctly.",
+        "priority": "low",
+        "dependencies": [
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Comprehensive Testing",
+        "description": "Write unit tests for entities, use cases, and repositories. Write BLoC tests for state transitions and logic. Write widget tests for UI validation and interaction. Write integration tests for end-to-end task flow with database and notifications.",
+        "details": "1.  Write unit tests for entities to ensure that they can be created and their properties can be accessed.\n2.  Write unit tests for use cases to ensure that they correctly interact with the repository and return the expected results.\n3.  Write unit tests for repositories to ensure that they correctly interact with Hive and store and retrieve data accurately.\n4.  Write BLoC tests to ensure that the `TaskBloc` correctly handles events, interacts with use cases, and emits the expected states.\n5.  Write widget tests to ensure that the UI is displayed correctly and interacts with the `TaskBloc` as expected.\n6.  Write integration tests to ensure that the end-to-end task flow works correctly, including database interactions and notifications.",
+        "testStrategy": "Run all tests and ensure that they pass. Aim for >90% code coverage.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          6,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Unit Test Entities",
+            "description": "Write unit tests for entities to ensure that they can be created and their properties can be accessed correctly.",
+            "dependencies": [],
+            "details": "Create tests to verify entity creation and property access.",
+            "status": "pending",
+            "testStrategy": "Run all entity unit tests and ensure they pass."
+          },
+          {
+            "id": 2,
+            "title": "Unit Test Use Cases and Repositories",
+            "description": "Write unit tests for use cases to ensure they correctly interact with the repository and return expected results. Also, write unit tests for repositories to ensure they correctly interact with Hive and store/retrieve data accurately.",
+            "dependencies": [],
+            "details": "Create tests to verify use case interactions with repositories and repository interactions with Hive.",
+            "status": "pending",
+            "testStrategy": "Run all use case and repository unit tests and ensure they pass."
+          },
+          {
+            "id": 3,
+            "title": "BLoC Testing",
+            "description": "Write BLoC tests to ensure the `TaskBloc` correctly handles events, interacts with use cases, and emits the expected states.",
+            "dependencies": [],
+            "details": "Use the `bloc_test` package to verify event handling, use case interaction, and state emission.",
+            "status": "pending",
+            "testStrategy": "Run all BLoC tests and ensure they pass. Verify state transitions for different events."
+          },
+          {
+            "id": 4,
+            "title": "Widget Testing",
+            "description": "Write widget tests to ensure the UI is displayed correctly and interacts with the `TaskBloc` as expected.",
+            "dependencies": [],
+            "details": "Verify UI display and interaction with the `TaskBloc` using widget tests.",
+            "status": "pending",
+            "testStrategy": "Run all widget tests and ensure they pass. Verify UI updates based on BLoC state."
+          },
+          {
+            "id": 5,
+            "title": "Integration Testing",
+            "description": "Write integration tests to ensure the end-to-end task flow works correctly, including database interactions and notifications.",
+            "dependencies": [],
+            "details": "Verify the complete task flow, including database interactions and notification scheduling.",
+            "status": "pending",
+            "testStrategy": "Run all integration tests and ensure they pass. Verify database updates and notification scheduling."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Set Up CI/CD and Documentation",
+        "description": "Set up CI/CD for builds using GitHub Actions or Codemagic. Create a `README.md` with feature documentation. Create `/screenshots` directory for UI screenshots. Create `/docs` directory for architecture documentation. Create `/test` directory with full test coverage.",
+        "details": "1.  Set up CI/CD using GitHub Actions or Codemagic.\n2.  Create a `README.md` with feature documentation.\n3.  Create a `/screenshots` directory for UI screenshots.\n4.  Create a `/docs` directory for architecture documentation.\n5.  Create a `/test` directory with full test coverage.",
+        "testStrategy": "Verify that the CI/CD pipeline is set up correctly and that the documentation and screenshots are created.",
+        "priority": "low",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-02T12:29:10.096Z",
+      "updated": "2025-08-02T13:48:02.054Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

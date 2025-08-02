@@ -1,0 +1,28 @@
+# Task ID: 2
+# Title: Configure Dependency Injection (GetIt)
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Set up dependency injection using `get_it` to manage dependencies across the application. This includes registering core services and repositories.
+# Details:
+1.  Add `get_it` as a dependency in `pubspec.yaml`.
+2.  Create a `service_locator.dart` file in the `core` directory.
+3.  Initialize `GetIt` instance.
+4.  Register core services (e.g., Hive service) as singletons.
+5.  Register repositories as singletons or factories as needed.
+
+Example:
+```dart
+final sl = GetIt.instance;
+
+Future<void> init() async {
+  // Services
+  sl.registerSingleton<HiveService>(HiveServiceImpl());
+
+  // Repositories
+  sl.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl(hiveService: sl()));
+}
+```
+
+# Test Strategy:
+Write unit tests to verify that dependencies are correctly registered and can be resolved using `GetIt.instance.get<DependencyType>()`.

@@ -1,0 +1,14 @@
+# Task ID: 10
+# Title: Implement Task Sorting and Filtering
+# Status: pending
+# Dependencies: 7
+# Priority: medium
+# Description: Implement sorting and filtering of tasks by status (completed/incomplete) and sorting by date or priority. Update the task list UI to reflect the applied filters and sorting options.
+# Details:
+1.  Add sorting and filtering options in the task list UI (e.g., dropdown menus, checkboxes).
+2.  Update the `TaskBloc` to handle sorting and filtering events.
+3.  Modify the `getTasks` use case to apply the selected filters and sorting options.
+4.  Update the task list UI to display the filtered and sorted tasks.
+
+# Test Strategy:
+Write widget tests to verify that the sorting and filtering options are displayed correctly, and that the task list updates based on the selected options.

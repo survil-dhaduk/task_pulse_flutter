@@ -1,0 +1,133 @@
+{
+	"meta": {
+		"generatedAt": "2025-08-02T12:34:05.572Z",
+		"tasksAnalyzed": 15,
+		"totalTasks": 15,
+		"analysisCount": 15,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Initialize Flutter Project and Folder Structure",
+			"complexityScore": 3,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the task into subtasks for creating the Flutter project, creating core directories, creating feature directories, and updating `pubspec.yaml` with dependencies.",
+			"reasoning": "Basic project setup with clear steps. Complexity arises from dependency management and platform configuration, but these are relatively straightforward."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Configure Dependency Injection (GetIt)",
+			"complexityScore": 5,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the task into adding the dependency, creating the service locator file, initializing GetIt, registering core services, and registering repositories.",
+			"reasoning": "Requires understanding of dependency injection principles and `get_it` package. Registration of services and repositories can become complex based on the application's architecture."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Define Task Entity",
+			"complexityScore": 3,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split the task into creating the `task.dart` file, defining the `Task` class with properties, and implementing `Equatable`.",
+			"reasoning": "Straightforward data model definition. Implementing `Equatable` adds a bit of complexity, but it's a standard practice."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Task Use Cases",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Create subtasks for implementing each use case: `CreateTask`, `UpdateTask`, `DeleteTask`, `GetTasks`, and `ToggleTaskCompletion`.",
+			"reasoning": "Involves defining business logic and handling success/failure scenarios using `dartz`. The complexity increases with the number of use cases."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement Task Repository with Hive",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the task into creating the repository interface, implementing the repository, setting up Hive, implementing CRUD operations, and handling data mapping.",
+			"reasoning": "Requires understanding of repository pattern and Hive database. Data mapping and error handling add complexity."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Task BLoC",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide the task into defining events, defining states, implementing event handlers for loading tasks, creating tasks, updating tasks, and deleting tasks.",
+			"reasoning": "Requires understanding of BLoC pattern and state management. Handling different events and states can be complex."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Task List UI",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Create subtasks for creating the screen, displaying the list, implementing slidable actions, connecting to the BLoC, and implementing Material Design 3.",
+			"reasoning": "Involves UI implementation, state management, and integration with external packages. Slidable actions and Material Design 3 add complexity."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement Task Creation/Edit UI",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the task into creating the screen, implementing input fields, implementing date/time pickers, implementing priority selection, managing form state, and connecting to the BLoC.",
+			"reasoning": "Involves UI implementation, form handling, and integration with date/time pickers. Managing form state and connecting to the BLoC adds complexity."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Implement Local Notifications",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the task into adding the dependency, initializing the plugin, requesting permissions, scheduling notifications, and handling notification settings.",
+			"reasoning": "Requires understanding of local notifications and platform-specific configurations. Scheduling notifications and handling permissions add complexity."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Implement Task Sorting and Filtering",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Create subtasks for adding sorting options, adding filtering options, updating the BLoC, modifying the `getTasks` use case, and updating the UI.",
+			"reasoning": "Involves UI updates, state management, and modifying the use case. Handling different sorting and filtering options adds complexity."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement Task Search",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Split the task into adding the search bar, updating the BLoC, modifying the `getTasks` use case, and updating the UI.",
+			"reasoning": "Involves UI updates, state management, and modifying the use case. Implementing the search functionality adds complexity."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Implement Light/Dark Mode",
+			"complexityScore": 3,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide the task into defining light and dark themes, setting the initial theme, and setting the theme mode.",
+			"reasoning": "Relatively straightforward theme implementation using `ThemeMode.system`."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Implement Responsive Design",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Create subtasks for using `LayoutBuilder`, using `MediaQuery`, adjusting the UI layout, and adjusting font sizes.",
+			"reasoning": "Requires understanding of responsive design principles and using `LayoutBuilder` and `MediaQuery`. Adjusting the UI for different screen sizes adds complexity."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Implement Comprehensive Testing",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the task into writing unit tests for entities, use cases, repositories, BLoC tests, widget tests, and integration tests.",
+			"reasoning": "Requires writing different types of tests and aiming for high code coverage. Testing different layers of the application adds complexity."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Set Up CI/CD and Documentation",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the task into setting up CI/CD, creating the `README.md`, creating the `/screenshots` directory, creating the `/docs` directory, and creating the `/test` directory.",
+			"reasoning": "Requires knowledge of CI/CD pipelines and documentation best practices. Setting up CI/CD and creating comprehensive documentation adds complexity."
+		}
+	]
+}

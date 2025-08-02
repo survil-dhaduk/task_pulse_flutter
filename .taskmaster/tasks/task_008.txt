@@ -1,0 +1,15 @@
+# Task ID: 8
+# Title: Implement Task Creation/Edit UI
+# Status: done
+# Dependencies: 6, 7
+# Priority: high
+# Description: Implement the UI for creating and editing tasks, including input fields for title, description, due date, and priority. Use appropriate date/time pickers and priority badges.
+# Details:
+1.  Create a `task_form_screen.dart` file in `lib/features/task_management/presentation/pages/`.
+2.  Use `TextFormField` widgets for input fields.
+3.  Use `showDatePicker` and `showTimePicker` for date and time selection.
+4.  Implement priority selection using radio buttons or dropdown.
+5.  Use `BlocProvider` and `BlocBuilder` to manage the form state and interact with the `TaskBloc`.
+
+# Test Strategy:
+Write widget tests to verify that the task form is displayed correctly, input fields accept valid data, and the form submits data to the `TaskBloc` correctly.

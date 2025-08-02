@@ -1,0 +1,16 @@
+# Task ID: 1
+# Title: Initialize Flutter Project and Folder Structure
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Initialize the Flutter project with the necessary configurations and folder structure as outlined in the PRD, including setting up the core and feature directories.
+# Details:
+1.  Create a new Flutter project: `flutter create task_pulse`
+2.  Create the core and feature directories inside `lib/`.
+3.  Inside `lib/features/`, create the `task_management` directory.
+4.  Inside `task_management`, create `data`, `domain`, and `presentation` directories.
+5.  Update `pubspec.yaml` with initial dependencies: `flutter_bloc`, `hive`, `flutter_local_notifications`, `get_it`, `dartz`. Use the latest stable versions.
+6.  Configure Flutter environment for Android and iOS platforms.
+
+# Test Strategy:
+Verify the folder structure is correctly set up and the `pubspec.yaml` file contains the required dependencies. Run `flutter pub get` to ensure all dependencies are fetched successfully.

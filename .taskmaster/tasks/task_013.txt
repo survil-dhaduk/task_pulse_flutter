@@ -1,0 +1,13 @@
+# Task ID: 13
+# Title: Implement Responsive Design
+# Status: pending
+# Dependencies: 7, 8
+# Priority: low
+# Description: Ensure the UI is responsive and supports all screen sizes. Use `LayoutBuilder` and `MediaQuery` to adapt the UI to different screen sizes.
+# Details:
+1.  Use `LayoutBuilder` to get the screen size.
+2.  Use `MediaQuery` to get the device's screen size and orientation.
+3.  Adjust the UI layout and font sizes based on the screen size and orientation.
+
+# Test Strategy:
+Test the UI on different screen sizes and orientations to ensure that it is responsive and adapts correctly.

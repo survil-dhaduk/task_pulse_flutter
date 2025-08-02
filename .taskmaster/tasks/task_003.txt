@@ -1,0 +1,37 @@
+# Task ID: 3
+# Title: Define Task Entity
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Define the core data models (entities) for the task management feature, including `Task` with properties like title, description, dueDate, priority, and completion status.
+# Details:
+1.  Create a `task.dart` file in `lib/features/task_management/domain/entities/`.
+2.  Define the `Task` class with necessary properties.
+3.  Implement `Equatable` for easy comparison of `Task` instances.
+
+Example:
+```dart
+class Task extends Equatable {
+  final String id;
+  final String title;
+  final String description;
+  final DateTime dueDate;
+  final Priority priority;
+  final bool isCompleted;
+
+  const Task({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.dueDate,
+    required this.priority,
+    required this.isCompleted,
+  });
+
+  @override
+  List<Object?> get props => [id, title, description, dueDate, priority, isCompleted];
+}
+```
+
+# Test Strategy:
+Write unit tests to ensure that `Task` objects can be created, their properties can be accessed, and `Equatable` is correctly implemented.

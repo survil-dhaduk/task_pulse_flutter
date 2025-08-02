@@ -1,0 +1,27 @@
+# Task ID: 4
+# Title: Implement Task Use Cases
+# Status: done
+# Dependencies: 3
+# Priority: high
+# Description: Implement use cases for task management, such as `CreateTask`, `UpdateTask`, `DeleteTask`, `GetTasks`, and `ToggleTaskCompletion`. Each use case should encapsulate a specific business logic.
+# Details:
+1.  Create a `usecases` directory in `lib/features/task_management/domain/`.
+2.  Create separate files for each use case (e.g., `create_task.dart`, `get_tasks.dart`).
+3.  Each use case should implement a `call()` method that executes the business logic.
+4.  Use `dartz` for handling success and failure scenarios.
+
+Example:
+```dart
+class CreateTask {
+  final TaskRepository repository;
+
+  CreateTask(this.repository);
+
+  Future<Either<Failure, void>> call(Task task) async {
+    return repository.createTask(task);
+  }
+}
+```
+
+# Test Strategy:
+Write unit tests for each use case to verify that they correctly interact with the repository and return the expected results (either success or failure).

@@ -1,0 +1,71 @@
+# Task ID: 6
+# Title: Implement Task BLoC
+# Status: done
+# Dependencies: 4, 5
+# Priority: high
+# Description: Implement BLoC for state management in the presentation layer. Create `TaskBloc` to handle task-related events and states, such as loading tasks, creating tasks, updating tasks, and deleting tasks.
+# Details:
+1.  Add `flutter_bloc` as a dependency in `pubspec.yaml`.
+2.  Create `task_bloc.dart` in `lib/features/task_management/presentation/bloc/`.
+3.  Define events (e.g., `LoadTasks`, `CreateTask`, `UpdateTask`, `DeleteTask`) and states (e.g., `TaskLoading`, `TaskLoaded`, `TaskError`).
+4.  Implement event handlers to interact with use cases and emit appropriate states.
+
+Example:
+```dart
+class TaskBloc extends Bloc<TaskEvent, TaskState> {
+  final GetTasks getTasks;
+  final CreateTask createTask;
+  final UpdateTask updateTask;
+  final DeleteTask deleteTask;
+
+  TaskBloc({
+    required this.getTasks,
+    required this.createTask,
+    required this.updateTask,
+    required this.deleteTask,
+  }) : super(TaskLoading()) {
+    on<LoadTasks>((event, emit) async {
+      emit(TaskLoading());
+      final result = await getTasks();
+      result.fold(
+        (failure) => emit(TaskError(message: failure.message)),
+        (tasks) => emit(TaskLoaded(tasks: tasks)),
+      );
+    });
+  }
+}
+```
+
+# Test Strategy:
+Write BLoC tests to verify that the `TaskBloc` correctly handles events, interacts with use cases, and emits the expected states. Use `bloc_test` package for testing.
+
+# Subtasks:
+## 1. Define Task Events [pending]
+### Dependencies: None
+### Description: Define all necessary events for the TaskBloc, including LoadTasks, CreateTask, UpdateTask, and DeleteTask. Ensure each event class properly encapsulates any required data.
+### Details:
+Create concrete event classes extending a base TaskEvent abstract class.  Each event should carry the necessary data (e.g., Task object for CreateTask, Task ID for DeleteTask).
+
+## 2. Define Task States [pending]
+### Dependencies: None
+### Description: Define all possible states for the TaskBloc, including TaskLoading, TaskLoaded (with a list of tasks), and TaskError (with an error message).
+### Details:
+Create concrete state classes extending a base TaskState abstract class. The TaskLoaded state should contain a List<Task>. The TaskError state should contain an error message string.
+
+## 3. Implement LoadTasks Event Handler [pending]
+### Dependencies: None
+### Description: Implement the event handler for the LoadTasks event. This handler should call the GetTasks use case, and emit either TaskLoaded (on success) or TaskError (on failure).
+### Details:
+Within the TaskBloc, use the 'on<LoadTasks>' method to register the handler. Call the GetTasks use case and use the 'fold' method on the result to handle both success and failure scenarios. Emit TaskLoading state before calling the use case.
+
+## 4. Implement CreateTask, UpdateTask, and DeleteTask Event Handlers [pending]
+### Dependencies: None
+### Description: Implement the event handlers for the CreateTask, UpdateTask, and DeleteTask events. These handlers should call the corresponding use cases (CreateTask, UpdateTask, DeleteTask) and emit either TaskLoaded (after refreshing the task list) or TaskError (on failure).
+### Details:
+Within the TaskBloc, use the 'on<CreateTask>', 'on<UpdateTask>', and 'on<DeleteTask>' methods to register the handlers. Call the corresponding use cases and use the 'fold' method on the result to handle both success and failure scenarios. After a successful operation, call the GetTasks use case and emit TaskLoaded with the updated task list.
+
+## 5. Integrate TaskBloc in Task List UI [pending]
+### Dependencies: None
+### Description: Integrate the TaskBloc into the Task List UI (Task 7) using BlocProvider and BlocBuilder. Ensure the UI updates correctly based on the TaskBloc's state.
+### Details:
+Wrap the TaskListScreen with a BlocProvider to provide an instance of TaskBloc. Use BlocBuilder within the TaskListScreen to rebuild the UI based on the TaskBloc's state (TaskLoading, TaskLoaded, TaskError). Dispatch LoadTasks event when the screen is initialized.

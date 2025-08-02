@@ -1,0 +1,64 @@
+# Task ID: 5
+# Title: Implement Task Repository with Hive
+# Status: done
+# Dependencies: 2, 3
+# Priority: high
+# Description: Define the `TaskRepository` interface in the domain layer, which outlines the methods for interacting with task data. Implement the `TaskRepositoryImpl` in the data layer using Hive for local persistence.
+# Details:
+1.  Create `task_repository.dart` in `lib/features/task_management/domain/repositories/` and define the `TaskRepository` interface.
+2.  Create `task_repository_impl.dart` in `lib/features/task_management/data/repositories/` and implement the `TaskRepository` interface.
+3.  Use Hive to store and retrieve task data.
+4.  Implement methods for creating, reading, updating, deleting, and toggling task completion.
+
+Example:
+```dart
+class TaskRepositoryImpl implements TaskRepository {
+  final HiveService hiveService;
+
+  TaskRepositoryImpl({required this.hiveService});
+
+  @override
+  Future<Either<Failure, void>> createTask(Task task) async {
+    try {
+      await hiveService.addTask(task);
+      return const Right(null);
+    } catch (e) {
+      return Left(DatabaseFailure(message: e.toString()));
+    }
+  }
+}
+```
+
+# Test Strategy:
+Write unit tests to verify that `TaskRepositoryImpl` correctly interacts with Hive, stores and retrieves data accurately, and handles potential errors.
+
+# Subtasks:
+## 1. Define TaskRepository Interface [pending]
+### Dependencies: None
+### Description: Create `task_repository.dart` in `lib/features/task_management/domain/repositories/` and define the `TaskRepository` interface with methods for task data interaction.
+### Details:
+Define methods like `createTask`, `readTask`, `updateTask`, `deleteTask`, and `toggleTaskCompletion` within the `TaskRepository` interface.
+
+## 2. Implement TaskRepositoryImpl with Hive [pending]
+### Dependencies: None
+### Description: Create `task_repository_impl.dart` in `lib/features/task_management/data/repositories/` and implement the `TaskRepository` interface using Hive for local persistence.
+### Details:
+Implement the methods defined in `TaskRepository` using Hive to store and retrieve task data. Inject `HiveService`.
+
+## 3. Implement Create Task Method [pending]
+### Dependencies: None
+### Description: Implement the `createTask` method in `TaskRepositoryImpl` to persist a new task to Hive.
+### Details:
+Use Hive's box operations to add a new task object to the designated Hive box.
+
+## 4. Implement Read, Update, Delete, and Toggle Methods [pending]
+### Dependencies: None
+### Description: Implement the `readTask`, `updateTask`, `deleteTask`, and `toggleTaskCompletion` methods in `TaskRepositoryImpl` using Hive.
+### Details:
+Use Hive's box operations to read, update, delete, and toggle the completion status of tasks based on their unique identifiers.
+
+## 5. Handle Hive Exceptions [pending]
+### Dependencies: None
+### Description: Implement error handling within `TaskRepositoryImpl` to catch and manage potential Hive exceptions.
+### Details:
+Wrap Hive operations in try-catch blocks to handle exceptions and return appropriate `Failure` objects (e.g., `DatabaseFailure`).

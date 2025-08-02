@@ -1,0 +1,155 @@
+Here's your **Product Requirements Document (PRD)** based on the provided implementation plan for the Flutter Task Manager app:
+
+---
+
+# 📄 **Product Requirements Document (PRD)**
+
+## 📌 **Product Name:** TaskPulse
+
+## 🧠 **Prepared By:** \[Your Name / Team Name]
+
+## 🗓️ **Date:** \[Insert Date]
+
+---
+
+## 📘 1. Overview
+
+### 1.1 Purpose
+
+The purpose of TaskPulse is to develop a **feature-rich task management app** that demonstrates **Clean Architecture**, **BLoC pattern**, **local data persistence** with Hive, and **notification scheduling** for reminders. This app serves both as a productivity tool and a showcase of modern Flutter development practices.
+
+### 1.2 Target Audience
+
+* Individual users seeking to manage their daily tasks
+* Developers interested in Clean Architecture and Flutter BLoC implementation
+* Recruiters/clients evaluating Flutter development skills
+
+---
+
+## 🧱 2. Features & Functional Requirements
+
+### 2.1 Core Features
+
+| Feature                    | Description                                                          |
+| -------------------------- | -------------------------------------------------------------------- |
+| **Task Creation**          | Users can add new tasks with title, description, due date, priority. |
+| **Task List**              | View all tasks in a scrollable list with slidable actions.           |
+| **Task Editing**           | Update task details.                                                 |
+| **Task Deletion**          | Delete tasks using a swipeable UI.                                   |
+| **Task Completion Toggle** | Mark task as complete/incomplete.                                    |
+| **Local Notifications**    | Schedule notifications for task due dates.                           |
+| **Sorting and Filtering**  | Filter tasks by status and sort by date or priority.                 |
+| **Search Tasks**           | Search by title or description.                                      |
+| **Light/Dark Mode**        | Auto theme switching based on system settings.                       |
+| **Responsive Design**      | Mobile-first UI supporting all screen sizes.                         |
+
+---
+
+## ⚙️ 3. Technical Requirements
+
+### 3.1 Platform
+
+* Flutter (cross-platform: Android & iOS)
+
+### 3.2 Architecture
+
+* **Clean Architecture**
+* **Feature-First Folder Structure**
+* **BLoC Pattern** for state management
+* **Hive** for local persistence
+* **flutter\_local\_notifications** for scheduling alerts
+
+### 3.3 Dependencies
+
+Refer to the `pubspec.yaml` for exact versions of:
+
+* `flutter_bloc`, `hive`, `flutter_local_notifications`, `get_it`, `dartz`, etc.
+
+---
+
+## 📁 4. Folder Structure (Feature-First)
+
+```
+lib/
+├── core/
+├── features/
+│   └── task_management/
+│       ├── data/
+│       ├── domain/
+│       └── presentation/
+└── main.dart
+```
+
+Detailed in the \[Implementation Plan].
+
+---
+
+## 🛠️ 5. Development Phases
+
+| Phase       | Description                       | Timeline |
+| ----------- | --------------------------------- | -------- |
+| **Phase 1** | Core setup, DI, base utils        | Day 1-2  |
+| **Phase 2** | Domain Layer: Entities, Use Cases | Day 2-3  |
+| **Phase 3** | Data Layer: Hive, Repository Impl | Day 3-4  |
+| **Phase 4** | Presentation Layer: BLoC          | Day 4-5  |
+| **Phase 5** | UI Implementation                 | Day 5-7  |
+| **Phase 6** | Notifications                     | Day 6-7  |
+| **Phase 7** | Filtering, Search, Polish         | Day 7-8  |
+
+---
+
+## 🧪 6. Testing Strategy
+
+| Test Type             | Coverage                                             |
+| --------------------- | ---------------------------------------------------- |
+| **Unit Tests**        | Entities, UseCases, Repositories                     |
+| **BLoC Tests**        | State transitions and logic                          |
+| **Widget Tests**      | UI validation and interaction                        |
+| **Integration Tests** | End-to-end task flow with database and notifications |
+
+---
+
+## 🎨 7. UI/UX Considerations
+
+* **Material Design 3**
+* **Slidable Interactions**
+* **Smooth Animations**
+* **Responsive and Accessible UI**
+* **Date/time pickers and priority badges**
+* **Empty state design**
+
+---
+
+## 🚀 8. Deployment
+
+* Deploy Android APK to Play Store (optional)
+* Setup CI/CD for builds (GitHub Actions or Codemagic)
+* GitHub repository will include:
+
+  * `README.md` with feature documentation
+  * `/screenshots` for UI
+  * `/docs` for architecture
+  * `/test` directory with full test coverage
+
+---
+
+## ✅ 9. Success Metrics
+
+| Metric                      | Goal                                                     |
+| --------------------------- | -------------------------------------------------------- |
+| **Code Coverage**           | > 90%                                                    |
+| **Frame Rate**              | 60fps                                                    |
+| **Crash Rate**              | < 1%                                                     |
+| **User Engagement**         | 5+ tasks/day                                             |
+| **UX Score (Internal)**     | 8+/10                                                    |
+| **Developer Quality Score** | High separation of concerns, modularity, maintainability |
+
+---
+
+## 🔚 10. Conclusion
+
+TaskPulse is a production-grade Flutter task management app that aims to not only serve users but also act as a **developer showcase project**. It integrates best practices in architecture, state management, local data handling, notifications, and modern UI/UX design.
+
+---
+
+Let me know if you’d like me to generate this PRD as a downloadable PDF or share a version suitable for GitHub `README.md`.

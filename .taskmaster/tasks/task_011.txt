@@ -1,0 +1,14 @@
+# Task ID: 11
+# Title: Implement Task Search
+# Status: pending
+# Dependencies: 7
+# Priority: medium
+# Description: Implement task searching by title or description. Update the task list UI to display the search results.
+# Details:
+1.  Add a search bar in the task list UI.
+2.  Update the `TaskBloc` to handle search events.
+3.  Modify the `getTasks` use case to filter tasks based on the search query.
+4.  Update the task list UI to display the search results.
+
+# Test Strategy:
+Write widget tests to verify that the search bar is displayed correctly, and that the task list updates based on the search query.

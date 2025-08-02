@@ -1,0 +1,13 @@
+# Task ID: 12
+# Title: Implement Light/Dark Mode
+# Status: pending
+# Dependencies: 1
+# Priority: low
+# Description: Implement light/dark mode theme switching based on system settings. Use `ThemeMode.system` to automatically switch between light and dark themes.
+# Details:
+1.  Use `ThemeData` to define light and dark themes.
+2.  Use `MaterialApp` to set the initial theme and theme mode.
+3.  Set `themeMode` to `ThemeMode.system` to automatically switch between light and dark themes based on system settings.
+
+# Test Strategy:
+Manually test the theme switching by changing the system theme settings and verifying that the app theme updates accordingly.

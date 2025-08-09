@@ -21,15 +21,27 @@ class TaskPulseApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TaskPulse',
+      // Light theme
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
       ),
+      // Dark theme
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      // Use system theme mode to automatically switch between light and dark
+      themeMode: ThemeMode.system,
       home: MultiBlocProvider(
         providers: [
-          BlocProvider<TaskBloc>(
-            create: (context) => sl<TaskBloc>(),
-          ),
+          BlocProvider<TaskBloc>(create: (context) => sl<TaskBloc>()),
         ],
         child: const TaskListScreen(),
       ),

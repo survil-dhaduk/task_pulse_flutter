@@ -1,6 +1,6 @@
 # Task ID: 12
 # Title: Implement Light/Dark Mode
-# Status: pending
+# Status: done
 # Dependencies: 1
 # Priority: low
 # Description: Implement light/dark mode theme switching based on system settings. Use `ThemeMode.system` to automatically switch between light and dark themes.

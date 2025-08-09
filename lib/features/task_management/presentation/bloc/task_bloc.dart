@@ -88,7 +88,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     final result = await updateTask.call(event.task);
 
-    result.fold((failure) => emit(TaskError(failure.message)), (_) async {
+   await result.fold((failure) async=> emit(TaskError(failure.message)), (_) async {
       // Reschedule notification after successful update
       await notificationService.cancelTaskNotification(event.task.id);
       await notificationService.scheduleTaskNotification(event.task);

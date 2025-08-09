@@ -1,6 +1,6 @@
 # Task ID: 10
 # Title: Implement Task Sorting and Filtering
-# Status: pending
+# Status: done
 # Dependencies: 7
 # Priority: medium
 # Description: Implement sorting and filtering of tasks by status (completed/incomplete) and sorting by date or priority. Update the task list UI to reflect the applied filters and sorting options.

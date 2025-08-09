@@ -75,3 +75,34 @@ class GetTasksByPriority extends TaskEvent {
   @override
   List<Object?> get props => [priority];
 }
+
+/// Filter options for task status
+enum TaskStatusFilter { all, completed, pending }
+
+/// Sort options for tasks
+enum TaskSortOption {
+  dueDateAsc,
+  dueDateDesc,
+  priorityHighFirst,
+  priorityLowFirst,
+}
+
+/// Event to filter tasks by completion status
+class FilterTasksByStatus extends TaskEvent {
+  final TaskStatusFilter filter;
+
+  const FilterTasksByStatus(this.filter);
+
+  @override
+  List<Object?> get props => [filter];
+}
+
+/// Event to sort tasks
+class SortTasks extends TaskEvent {
+  final TaskSortOption sortOption;
+
+  const SortTasks(this.sortOption);
+
+  @override
+  List<Object?> get props => [sortOption];
+}

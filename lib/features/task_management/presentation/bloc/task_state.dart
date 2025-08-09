@@ -19,11 +19,12 @@ class TaskLoading extends TaskState {
 /// State when tasks have been loaded successfully
 class TaskLoaded extends TaskState {
   final List<Task> tasks;
+  final String? hint; // e.g., "sorted by due date", "filtered: completed"
 
-  const TaskLoaded(this.tasks);
+  const TaskLoaded(this.tasks, {this.hint});
 
   @override
-  List<Object?> get props => [tasks];
+  List<Object?> get props => [tasks, hint];
 }
 
 /// State when an error occurs
@@ -39,11 +40,12 @@ class TaskError extends TaskState {
 /// State when a task operation is in progress
 class TaskOperationInProgress extends TaskState {
   final List<Task> tasks;
+  final String? hint;
 
-  const TaskOperationInProgress(this.tasks);
+  const TaskOperationInProgress(this.tasks, {this.hint});
 
   @override
-  List<Object?> get props => [tasks];
+  List<Object?> get props => [tasks, hint];
 }
 
 /// State when tasks are being searched

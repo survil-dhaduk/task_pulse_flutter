@@ -38,6 +38,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
         foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          // Filter menu
+          _buildFilterMenu(),
+          // Sort menu
+          _buildSortMenu(),
+          const SizedBox(width: 8),
+        ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
@@ -77,7 +84,27 @@ class _TaskListScreenState extends State<TaskListScreen> {
               ),
             );
           } else if (state is TaskLoaded) {
-            return _buildTaskList(state.tasks);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (state.hint != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    child: Text(
+                      state.hint!,
+                      style: Theme.of(context).textTheme.labelMedium,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                Expanded(child: _buildTaskList(state.tasks)),
+              ],
+            );
           } else if (state is TaskOperationInProgress) {
             return Stack(
               children: [
@@ -99,10 +126,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BlocProvider.value(
-                value: taskBloc,
-                child: TaskFormScreen(),
-              ),
+              builder: (context) =>
+                  BlocProvider.value(value: taskBloc, child: TaskFormScreen()),
             ),
           );
         },
@@ -110,6 +135,52 @@ class _TaskListScreenState extends State<TaskListScreen> {
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  PopupMenuButton<TaskStatusFilter> _buildFilterMenu() {
+    return PopupMenuButton<TaskStatusFilter>(
+      tooltip: 'Filter',
+      icon: const Icon(Icons.filter_list),
+      onSelected: (filter) {
+        context.read<TaskBloc>().add(FilterTasksByStatus(filter));
+      },
+      itemBuilder: (context) => const [
+        PopupMenuItem(value: TaskStatusFilter.all, child: Text('All')),
+        PopupMenuItem(value: TaskStatusFilter.pending, child: Text('Pending')),
+        PopupMenuItem(
+          value: TaskStatusFilter.completed,
+          child: Text('Completed'),
+        ),
+      ],
+    );
+  }
+
+  PopupMenuButton<TaskSortOption> _buildSortMenu() {
+    return PopupMenuButton<TaskSortOption>(
+      tooltip: 'Sort',
+      icon: const Icon(Icons.sort),
+      onSelected: (option) {
+        context.read<TaskBloc>().add(SortTasks(option));
+      },
+      itemBuilder: (context) => const [
+        PopupMenuItem(
+          value: TaskSortOption.dueDateAsc,
+          child: Text('Due date ↑'),
+        ),
+        PopupMenuItem(
+          value: TaskSortOption.dueDateDesc,
+          child: Text('Due date ↓'),
+        ),
+        PopupMenuItem(
+          value: TaskSortOption.priorityHighFirst,
+          child: Text('Priority high → low'),
+        ),
+        PopupMenuItem(
+          value: TaskSortOption.priorityLowFirst,
+          child: Text('Priority low → high'),
+        ),
+      ],
     );
   }
 
@@ -348,16 +419,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   void _onEditTask(Task task) {
     final taskBloc = context.read<TaskBloc>();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BlocProvider.value(
-                value: taskBloc,
-                child: TaskFormScreen(task: task),
-              ),
-            ),
-          );
-
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          value: taskBloc,
+          child: TaskFormScreen(task: task),
+        ),
+      ),
+    );
   }
 
   void _onDeleteTask(Task task) {
@@ -373,7 +443,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
           ),
           TextButton(
             onPressed: () {
-
               Navigator.of(context).pop();
               context.read<TaskBloc>().add(DeleteTask(task.id));
             },

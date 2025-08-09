@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/services/notification_service.dart';
+import '../../domain/entities/priority.dart';
+import '../../domain/entities/task.dart';
 import '../../domain/usecases/usecases.dart' as usecases;
 import 'task_event.dart';
 import 'task_state.dart';
@@ -33,6 +35,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<ToggleTaskCompletion>(_onToggleTaskCompletion);
     on<SearchTasks>(_onSearchTasks);
     on<GetTasksByPriority>(_onGetTasksByPriority);
+    on<FilterTasksByStatus>(_onFilterTasksByStatus);
+    on<SortTasks>(_onSortTasks);
   }
 
   /// Handle LoadTasks event
@@ -51,12 +55,16 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _onCreateTask(CreateTask event, Emitter<TaskState> emit) async {
     final currentState = state;
     if (currentState is TaskLoaded) {
-      emit(TaskOperationInProgress(currentState.tasks));
+      emit(
+        TaskOperationInProgress(currentState.tasks, hint: 'Creating task...'),
+      );
     }
 
     final result = await createTask.call(event.task);
 
-    await result.fold((failure) async => emit(TaskError(failure.message)), (_) async {
+    await result.fold((failure) async => emit(TaskError(failure.message)), (
+      _,
+    ) async {
       // Schedule notification after successful creation
       await notificationService.scheduleTaskNotification(event.task);
 
@@ -73,7 +81,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _onUpdateTask(UpdateTask event, Emitter<TaskState> emit) async {
     final currentState = state;
     if (currentState is TaskLoaded) {
-      emit(TaskOperationInProgress(currentState.tasks));
+      emit(
+        TaskOperationInProgress(currentState.tasks, hint: 'Updating task...'),
+      );
     }
 
     final result = await updateTask.call(event.task);
@@ -96,7 +106,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _onDeleteTask(DeleteTask event, Emitter<TaskState> emit) async {
     final currentState = state;
     if (currentState is TaskLoaded) {
-      emit(TaskOperationInProgress(currentState.tasks));
+      emit(
+        TaskOperationInProgress(currentState.tasks, hint: 'Deleting task...'),
+      );
     }
 
     final result = await deleteTask.call(event.taskId);
@@ -118,12 +130,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     final currentState = state;
     if (currentState is TaskLoaded) {
-      emit(TaskOperationInProgress(currentState.tasks));
+      emit(
+        TaskOperationInProgress(
+          currentState.tasks,
+          hint: 'Toggling completion...',
+        ),
+      );
     }
 
     final result = await toggleTaskCompletion.call(event.taskId);
 
-    await result.fold((failure) async => emit(TaskError(failure.message)), (_) async {
+    await result.fold((failure) async => emit(TaskError(failure.message)), (
+      _,
+    ) async {
       // Refresh the task list after successful toggle
       final refreshResult = await getTasks.call();
       refreshResult.fold(
@@ -158,7 +177,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     final currentState = state;
     if (currentState is TaskLoaded) {
-      emit(TaskOperationInProgress(currentState.tasks));
+      emit(
+        TaskOperationInProgress(
+          currentState.tasks,
+          hint: 'Filtering by priority...',
+        ),
+      );
     }
 
     final result = await getTasksByPriority.call(event.priority);
@@ -167,5 +191,83 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       (failure) => emit(TaskError(failure.message)),
       (tasks) => emit(TaskFilteredByPriority(tasks, event.priority)),
     );
+  }
+
+  /// Handle FilterTasksByStatus event
+  Future<void> _onFilterTasksByStatus(
+    FilterTasksByStatus event,
+    Emitter<TaskState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is TaskLoaded) {
+      emit(TaskOperationInProgress(currentState.tasks, hint: 'Filtering...'));
+    }
+
+    // Fetch all tasks then filter in-memory (repository provides helpers too)
+    final result = await getTasks.call();
+    result.fold((failure) => emit(TaskError(failure.message)), (tasks) {
+      List<Task> filtered;
+      switch (event.filter) {
+        case TaskStatusFilter.completed:
+          filtered = tasks.where((t) => t.isCompleted).toList();
+          break;
+        case TaskStatusFilter.pending:
+          filtered = tasks.where((t) => !t.isCompleted).toList();
+          break;
+        case TaskStatusFilter.all:
+          filtered = tasks;
+          break;
+      }
+      emit(TaskLoaded(filtered, hint: 'filter: ${event.filter.name}'));
+    });
+  }
+
+  /// Handle SortTasks event
+  Future<void> _onSortTasks(SortTasks event, Emitter<TaskState> emit) async {
+    final currentState = state;
+    List<Task> baseList = [];
+    if (currentState is TaskLoaded) {
+      baseList = List.of(currentState.tasks);
+    } else {
+      final result = await getTasks.call();
+      final either = result.fold<List<Task>>((_) => [], (tasks) => tasks);
+      baseList = List.of(either);
+    }
+
+    int priorityRank(Priority p) {
+      switch (p) {
+        case Priority.high:
+          return 3;
+        case Priority.medium:
+          return 2;
+        case Priority.low:
+          return 1;
+      }
+    }
+
+    switch (event.sortOption) {
+      case TaskSortOption.dueDateAsc:
+        baseList.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+        emit(TaskLoaded(baseList, hint: 'sorted: due date ↑'));
+        break;
+      case TaskSortOption.dueDateDesc:
+        baseList.sort((a, b) => b.dueDate.compareTo(a.dueDate));
+        emit(TaskLoaded(baseList, hint: 'sorted: due date ↓'));
+        break;
+      case TaskSortOption.priorityHighFirst:
+        baseList.sort(
+          (a, b) =>
+              priorityRank(b.priority).compareTo(priorityRank(a.priority)),
+        );
+        emit(TaskLoaded(baseList, hint: 'sorted: priority high → low'));
+        break;
+      case TaskSortOption.priorityLowFirst:
+        baseList.sort(
+          (a, b) =>
+              priorityRank(a.priority).compareTo(priorityRank(b.priority)),
+        );
+        emit(TaskLoaded(baseList, hint: 'sorted: priority low → high'));
+        break;
+    }
   }
 }

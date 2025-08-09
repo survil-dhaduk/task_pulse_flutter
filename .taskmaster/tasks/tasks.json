@@ -322,7 +322,7 @@
           6,
           9
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -330,7 +330,7 @@
             "description": "Write unit tests for entities to ensure that they can be created and their properties can be accessed correctly.",
             "dependencies": [],
             "details": "Create tests to verify entity creation and property access.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run all entity unit tests and ensure they pass."
           },
           {
@@ -339,7 +339,7 @@
             "description": "Write unit tests for use cases to ensure they correctly interact with the repository and return expected results. Also, write unit tests for repositories to ensure they correctly interact with Hive and store/retrieve data accurately.",
             "dependencies": [],
             "details": "Create tests to verify use case interactions with repositories and repository interactions with Hive.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run all use case and repository unit tests and ensure they pass."
           },
           {
@@ -348,7 +348,7 @@
             "description": "Write BLoC tests to ensure the `TaskBloc` correctly handles events, interacts with use cases, and emits the expected states.",
             "dependencies": [],
             "details": "Use the `bloc_test` package to verify event handling, use case interaction, and state emission.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run all BLoC tests and ensure they pass. Verify state transitions for different events."
           },
           {
@@ -357,7 +357,7 @@
             "description": "Write widget tests to ensure the UI is displayed correctly and interacts with the `TaskBloc` as expected.",
             "dependencies": [],
             "details": "Verify UI display and interaction with the `TaskBloc` using widget tests.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run all widget tests and ensure they pass. Verify UI updates based on BLoC state."
           },
           {
@@ -366,7 +366,7 @@
             "description": "Write integration tests to ensure the end-to-end task flow works correctly, including database interactions and notifications.",
             "dependencies": [],
             "details": "Verify the complete task flow, including database interactions and notification scheduling.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run all integration tests and ensure they pass. Verify database updates and notification scheduling."
           }
         ]

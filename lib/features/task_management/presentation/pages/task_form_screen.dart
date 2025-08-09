@@ -130,213 +130,381 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.task != null ? 'Edit Task' : 'Create Task'),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-        elevation: 0,
-      ),
-      body: BlocListener<TaskBloc, TaskState>(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determine screen size breakpoints
+        final screenWidth = constraints.maxWidth;
+        final isTablet = screenWidth >= 600;
+        final isDesktop = screenWidth >= 1200;
 
-        listener: (context, state) {
-          if (state is TaskLoaded) {
-            setState(() {
-              _isLoading = false;
-            });
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  widget.task != null
-                      ? 'Task updated successfully!'
-                      : 'Task created successfully!',
-                ),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
-            );
-          } else if (state is TaskError) {
-            setState(() {
-              _isLoading = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error: ${state.message}'),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
-          }
-        },
-        child: BlocBuilder<TaskBloc, TaskState>(
-          builder: (context, state) {
-            return Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Title Field
-                        TextFormField(
-                          controller: _titleController,
-                          decoration: const InputDecoration(
-                            labelText: 'Title',
-                            hintText: 'Enter task title',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please enter a title';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
+        // Responsive layout adjustments
+        final horizontalPadding = isDesktop ? 32.0 : (isTablet ? 24.0 : 16.0);
+        final formMaxWidth = isDesktop ? 800.0 : double.infinity;
 
-                        // Description Field
-                        TextFormField(
-                          controller: _descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            hintText: 'Enter task description',
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLines: 3,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please enter a description';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Date and Time Selection
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Due Date & Time',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: ListTile(
-                                        leading: const Icon(
-                                          Icons.calendar_today,
-                                        ),
-                                        title: Text(
-                                          DateFormat(
-                                            'MMM dd, yyyy',
-                                          ).format(_selectedDate),
-                                        ),
-                                        onTap: _selectDate,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ListTile(
-                                        leading: const Icon(Icons.access_time),
-                                        title: Text(
-                                          _selectedTime.format(context),
-                                        ),
-                                        onTap: _selectTime,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Priority Selection
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Priority',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                ),
-                                const SizedBox(height: 16),
-                                ...Priority.values.map(
-                                  (priority) => RadioListTile<Priority>(
-                                    title: Row(
-                                      children: [
-                                        Container(
-                                          width: 16,
-                                          height: 16,
-                                          decoration: BoxDecoration(
-                                            color: Color(priority.colorValue),
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(priority.displayName),
-                                      ],
-                                    ),
-                                    value: priority,
-                                    groupValue: _selectedPriority,
-                                    onChanged: (Priority? value) {
-                                      setState(() {
-                                        _selectedPriority = value!;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Submit Button
-                        ElevatedButton(
-                          onPressed: _isLoading ? null : _submitForm,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(
-                                  widget.task != null
-                                      ? 'Update Task'
-                                      : 'Create Task',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                        ),
-                      ],
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              widget.task != null ? 'Edit Task' : 'Create Task',
+              style: TextStyle(fontSize: isTablet ? 22 : null),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            elevation: 0,
+          ),
+          body: BlocListener<TaskBloc, TaskState>(
+            listener: (context, state) {
+              if (state is TaskLoaded) {
+                setState(() {
+                  _isLoading = false;
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      widget.task != null
+                          ? 'Task updated successfully!'
+                          : 'Task created successfully!',
                     ),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
+                );
+              } else if (state is TaskError) {
+                setState(() {
+                  _isLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error: ${state.message}'),
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                  ),
+                );
+              }
+            },
+            child: BlocBuilder<TaskBloc, TaskState>(
+              builder: (context, state) {
+                Widget buildMainContent() {
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: formMaxWidth),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(horizontalPadding),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Title Field
+                              TextFormField(
+                                controller: _titleController,
+                                style: TextStyle(
+                                  fontSize: isTablet ? 18 : null,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Title',
+                                  labelStyle: TextStyle(
+                                    fontSize: isTablet ? 16 : null,
+                                  ),
+                                  hintText: 'Enter task title',
+                                  hintStyle: TextStyle(
+                                    fontSize: isTablet ? 16 : null,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      isTablet ? 16 : 12,
+                                    ),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 20 : 16,
+                                    vertical: isTablet ? 20 : 16,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter a title';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: isTablet ? 24 : 16),
+
+                              // Description Field
+                              TextFormField(
+                                controller: _descriptionController,
+                                style: TextStyle(
+                                  fontSize: isTablet ? 16 : null,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Description',
+                                  labelStyle: TextStyle(
+                                    fontSize: isTablet ? 16 : null,
+                                  ),
+                                  hintText: 'Enter task description',
+                                  hintStyle: TextStyle(
+                                    fontSize: isTablet ? 16 : null,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      isTablet ? 16 : 12,
+                                    ),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 20 : 16,
+                                    vertical: isTablet ? 20 : 16,
+                                  ),
+                                ),
+                                maxLines: isTablet ? 4 : 3,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter a description';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: isTablet ? 32 : 24),
+
+                              // Date and Time Selection
+                              Card(
+                                elevation: isTablet ? 3 : 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    isTablet ? 20 : 16,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(
+                                    isTablet ? 24.0 : 16.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Due Date & Time',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontSize: isTablet ? 20 : null,
+                                            ),
+                                      ),
+                                      SizedBox(height: isTablet ? 20 : 16),
+                                      isTablet
+                                          ? Row(
+                                              children: [
+                                                Expanded(
+                                                  child: _buildDateTimeSelector(
+                                                    Icons.calendar_today,
+                                                    DateFormat(
+                                                      'MMM dd, yyyy',
+                                                    ).format(_selectedDate),
+                                                    _selectDate,
+                                                    isTablet,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: _buildDateTimeSelector(
+                                                    Icons.access_time,
+                                                    _selectedTime.format(
+                                                      context,
+                                                    ),
+                                                    _selectTime,
+                                                    isTablet,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : Column(
+                                              children: [
+                                                _buildDateTimeSelector(
+                                                  Icons.calendar_today,
+                                                  DateFormat(
+                                                    'MMM dd, yyyy',
+                                                  ).format(_selectedDate),
+                                                  _selectDate,
+                                                  isTablet,
+                                                ),
+                                                const SizedBox(height: 8),
+                                                _buildDateTimeSelector(
+                                                  Icons.access_time,
+                                                  _selectedTime.format(context),
+                                                  _selectTime,
+                                                  isTablet,
+                                                ),
+                                              ],
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: isTablet ? 24 : 16),
+
+                              // Priority Selection
+                              Card(
+                                elevation: isTablet ? 3 : 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    isTablet ? 20 : 16,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(
+                                    isTablet ? 24.0 : 16.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Priority',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontSize: isTablet ? 20 : null,
+                                            ),
+                                      ),
+                                      SizedBox(height: isTablet ? 20 : 16),
+                                      ...Priority.values.map(
+                                        (priority) => RadioListTile<Priority>(
+                                          title: Row(
+                                            children: [
+                                              Container(
+                                                width: isTablet ? 20 : 16,
+                                                height: isTablet ? 20 : 16,
+                                                decoration: BoxDecoration(
+                                                  color: Color(
+                                                    priority.colorValue,
+                                                  ),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: isTablet ? 12 : 8,
+                                              ),
+                                              Text(
+                                                priority.displayName,
+                                                style: TextStyle(
+                                                  fontSize: isTablet
+                                                      ? 16
+                                                      : null,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          value: priority,
+                                          groupValue: _selectedPriority,
+                                          contentPadding: EdgeInsets.symmetric(
+                                            horizontal: isTablet ? 8 : 0,
+                                            vertical: isTablet ? 4 : 0,
+                                          ),
+                                          onChanged: (Priority? value) {
+                                            setState(() {
+                                              _selectedPriority = value!;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: isTablet ? 48 : 32),
+
+                              // Submit Button
+                              ElevatedButton(
+                                onPressed: _isLoading ? null : _submitForm,
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: isTablet ? 20 : 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      isTablet ? 16 : 12,
+                                    ),
+                                  ),
+                                ),
+                                child: _isLoading
+                                    ? SizedBox(
+                                        height: isTablet ? 24 : 20,
+                                        width: isTablet ? 24 : 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: isTablet ? 3 : 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        widget.task != null
+                                            ? 'Update Task'
+                                            : 'Create Task',
+                                        style: TextStyle(
+                                          fontSize: isTablet ? 18 : 16,
+                                        ),
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return Stack(
+                  children: [
+                    buildMainContent(),
+                    if (_isLoading)
+                      Container(
+                        color: Colors.black54,
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDateTimeSelector(
+    IconData icon,
+    String text,
+    VoidCallback onTap,
+    bool isTablet,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: isTablet ? 16 : 12,
+          vertical: isTablet ? 16 : 12,
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+          ),
+          borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: isTablet ? 24 : 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            SizedBox(width: isTablet ? 12 : 8),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: isTablet ? 16 : 14,
+                  fontWeight: FontWeight.w500,
                 ),
-                if (_isLoading)
-                  Container(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );

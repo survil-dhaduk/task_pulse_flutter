@@ -61,168 +61,230 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'TaskPulse',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          // Filter menu
-          _buildFilterMenu(),
-          // Sort menu
-          _buildSortMenu(),
-          const SizedBox(width: 8),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                hintText: 'Search tasks...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: 'Clear',
-                        icon: const Icon(Icons.clear),
-                        onPressed: _clearSearch,
-                      ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determine screen size breakpoints
+        final screenWidth = constraints.maxWidth;
+        final isTablet = screenWidth >= 600;
+        final isDesktop = screenWidth >= 1200;
+
+        // Responsive padding and layout adjustments
+        final horizontalPadding = isDesktop ? 32.0 : (isTablet ? 24.0 : 16.0);
+        final searchBottomPadding = isTablet ? 16.0 : 12.0;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'TaskPulse',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            elevation: 0,
+            centerTitle: true,
+            actions: [
+              // Filter menu
+              _buildFilterMenu(),
+              // Sort menu
+              _buildSortMenu(),
+              SizedBox(width: isTablet ? 16 : 8),
+            ],
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(isTablet ? 72 : 56),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  0,
+                  horizontalPadding,
+                  searchBottomPadding,
                 ),
-                isDense: true,
-                filled: true,
+                child: _buildResponsiveSearchField(isTablet),
               ),
             ),
           ),
-        ),
-      ),
-      body: BlocBuilder<TaskBloc, TaskState>(
-        builder: (context, state) {
-          if (state is TaskLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is TaskError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
+          body: BlocBuilder<TaskBloc, TaskState>(
+            builder: (context, state) {
+              if (state is TaskLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is TaskError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: isTablet ? 80 : 64,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: horizontalPadding,
+                        ),
+                        child: Text(
+                          state.message,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<TaskBloc>().add(LoadTasks());
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
+                );
+              } else if (state is TaskLoaded) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (state.hint != null)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: horizontalPadding,
+                          vertical: 8,
+                        ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        child: Text(
+                          state.hint!,
+                          style: Theme.of(context).textTheme.labelMedium,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    Expanded(
+                      child: _buildTaskList(
+                        state.tasks,
+                        screenWidth,
+                        isTablet,
+                        isDesktop,
+                      ),
                     ),
+                  ],
+                );
+              } else if (state is TaskSearchResults) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding,
+                        vertical: 8,
+                      ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      child: Text(
+                        "Search: '${state.query}' — ${state.tasks.length} result(s)",
+                        style: Theme.of(context).textTheme.labelMedium,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildTaskList(
+                        state.tasks,
+                        screenWidth,
+                        isTablet,
+                        isDesktop,
+                      ),
+                    ),
+                  ],
+                );
+              } else if (state is TaskSearching) {
+                return Stack(
+                  children: [
+                    _buildTaskList(
+                      state.tasks,
+                      screenWidth,
+                      isTablet,
+                      isDesktop,
+                    ),
+                    Container(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                  ],
+                );
+              } else if (state is TaskOperationInProgress) {
+                return Stack(
+                  children: [
+                    _buildTaskList(
+                      state.tasks,
+                      screenWidth,
+                      isTablet,
+                      isDesktop,
+                    ),
+                    Container(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(child: Text('No tasks available'));
+              }
+            },
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              final taskBloc = context.read<TaskBloc>();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider.value(
+                    value: taskBloc,
+                    child: TaskFormScreen(),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<TaskBloc>().add(LoadTasks());
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
+                ),
+              );
+            },
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            child: const Icon(Icons.add),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildResponsiveSearchField(bool isTablet) {
+    return TextField(
+      controller: _searchController,
+      onChanged: _onSearchChanged,
+      textInputAction: TextInputAction.search,
+      style: TextStyle(fontSize: isTablet ? 16 : 14),
+      decoration: InputDecoration(
+        hintText: 'Search tasks...',
+        hintStyle: TextStyle(fontSize: isTablet ? 16 : 14),
+        prefixIcon: Icon(Icons.search, size: isTablet ? 24 : 20),
+        suffixIcon: _searchController.text.isEmpty
+            ? null
+            : IconButton(
+                tooltip: 'Clear',
+                icon: Icon(Icons.clear, size: isTablet ? 24 : 20),
+                onPressed: _clearSearch,
               ),
-            );
-          } else if (state is TaskLoaded) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (state.hint != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: Text(
-                      state.hint!,
-                      style: Theme.of(context).textTheme.labelMedium,
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                Expanded(child: _buildTaskList(state.tasks)),
-              ],
-            );
-          } else if (state is TaskSearchResults) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  child: Text(
-                    "Search: '${state.query}' — ${state.tasks.length} result(s)",
-                    style: Theme.of(context).textTheme.labelMedium,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                Expanded(child: _buildTaskList(state.tasks)),
-              ],
-            );
-          } else if (state is TaskSearching) {
-            return Stack(
-              children: [
-                _buildTaskList(state.tasks),
-                Container(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-              ],
-            );
-          } else if (state is TaskOperationInProgress) {
-            return Stack(
-              children: [
-                _buildTaskList(state.tasks),
-                Container(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('No tasks available'));
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final taskBloc = context.read<TaskBloc>();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  BlocProvider.value(value: taskBloc, child: TaskFormScreen()),
-            ),
-          );
-        },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        child: const Icon(Icons.add),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+        ),
+        isDense: !isTablet,
+        filled: true,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isTablet ? 20 : 16,
+          vertical: isTablet ? 16 : 12,
+        ),
       ),
     );
   }
@@ -273,7 +335,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Widget _buildTaskList(List<Task> tasks) {
+  Widget _buildTaskList(
+    List<Task> tasks,
+    double screenWidth,
+    bool isTablet,
+    bool isDesktop,
+  ) {
     if (tasks.isEmpty) {
       return Center(
         child: Column(
@@ -281,7 +348,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           children: [
             Icon(
               Icons.task_alt,
-              size: 64,
+              size: isTablet ? 80 : 64,
               color: Theme.of(context).colorScheme.outline,
             ),
             const SizedBox(height: 16),
@@ -289,35 +356,73 @@ class _TaskListScreenState extends State<TaskListScreen> {
               'No tasks yet',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
+                fontSize: isTablet ? 28 : null,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Tap the + button to create your first task',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24),
+              child: Text(
+                'Tap the + button to create your first task',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                  fontSize: isTablet ? 16 : null,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
       );
     }
 
+    // Determine responsive layout
+    final horizontalPadding = isDesktop ? 32.0 : (isTablet ? 24.0 : 16.0);
+    final itemSpacing = isTablet ? 12.0 : 8.0;
+
+    // For desktop screens, use a grid layout with limited width
+    if (isDesktop && screenWidth > 1200) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: GridView.builder(
+            padding: EdgeInsets.all(horizontalPadding),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: itemSpacing,
+              childAspectRatio: 3.5,
+            ),
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+              return _buildTaskCard(task, isTablet, isDesktop);
+            },
+          ),
+        ),
+      );
+    }
+
+    // For tablets and phones, use ListView
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(horizontalPadding),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: _buildTaskCard(task),
+          padding: EdgeInsets.only(bottom: itemSpacing),
+          child: _buildTaskCard(task, isTablet, isDesktop),
         );
       },
     );
   }
 
-  Widget _buildTaskCard(Task task) {
+  Widget _buildTaskCard(Task task, bool isTablet, bool isDesktop) {
+    final cardPadding = isTablet ? 20.0 : 16.0;
+    final checkboxScale = isTablet ? 1.2 : 1.0;
+    final spacingBetweenElements = isTablet ? 16.0 : 12.0;
+    final iconSize = isTablet ? 20.0 : 16.0;
+
     return Slidable(
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
@@ -339,22 +444,25 @@ class _TaskListScreenState extends State<TaskListScreen> {
         ],
       ),
       child: Card(
-        elevation: 2,
+        elevation: isTablet ? 3 : 2,
         margin: EdgeInsets.zero,
         child: InkWell(
           onTap: () => _onToggleTaskCompletion(task),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(cardPadding),
             child: Row(
               children: [
                 // Checkbox
-                Checkbox(
-                  value: task.isCompleted,
-                  onChanged: (_) => _onToggleTaskCompletion(task),
-                  activeColor: Theme.of(context).colorScheme.primary,
+                Transform.scale(
+                  scale: checkboxScale,
+                  child: Checkbox(
+                    value: task.isCompleted,
+                    onChanged: (_) => _onToggleTaskCompletion(task),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: spacingBetweenElements),
                 // Task details
                 Expanded(
                   child: Column(
@@ -373,15 +481,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                     color: task.isCompleted
                                         ? Theme.of(context).colorScheme.outline
                                         : null,
+                                    fontSize: isTablet ? 18 : null,
                                   ),
                             ),
                           ),
                           const SizedBox(width: 8),
-                          _buildPriorityChip(task.priority),
+                          _buildPriorityChip(task.priority, isTablet),
                         ],
                       ),
                       if (task.description.isNotEmpty) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(height: isTablet ? 6 : 4),
                         Text(
                           task.description,
                           style: Theme.of(context).textTheme.bodyMedium
@@ -394,35 +503,41 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                 decoration: task.isCompleted
                                     ? TextDecoration.lineThrough
                                     : null,
+                                fontSize: isTablet ? 16 : null,
                               ),
-                          maxLines: 2,
+                          maxLines: isTablet ? 3 : 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
-                      const SizedBox(height: 8),
+                      SizedBox(height: isTablet ? 12 : 8),
                       Row(
                         children: [
                           Icon(
                             Icons.schedule,
-                            size: 16,
+                            size: iconSize,
                             color: _getDueDateColor(task),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             _formatDueDate(task.dueDate),
                             style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: _getDueDateColor(task)),
+                                ?.copyWith(
+                                  color: _getDueDateColor(task),
+                                  fontSize: isTablet ? 14 : null,
+                                ),
                           ),
                           if (task.isOverdue) ...[
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isTablet ? 8 : 6,
+                                vertical: isTablet ? 3 : 2,
                               ),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.error,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(
+                                  isTablet ? 6 : 4,
+                                ),
                               ),
                               child: Text(
                                 'OVERDUE',
@@ -432,6 +547,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                         context,
                                       ).colorScheme.onError,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: isTablet ? 11 : null,
                                     ),
                               ),
                             ),
@@ -449,12 +565,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Widget _buildPriorityChip(Priority priority) {
+  Widget _buildPriorityChip(Priority priority, bool isTablet) {
+    final chipPadding = isTablet ? 10.0 : 8.0;
+    final chipVerticalPadding = isTablet ? 5.0 : 4.0;
+    final fontSize = isTablet ? 12.0 : 10.0;
+    final borderRadius = isTablet ? 14.0 : 12.0;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: chipPadding,
+        vertical: chipVerticalPadding,
+      ),
       decoration: BoxDecoration(
         color: Color(priority.colorValue).withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: Color(priority.colorValue).withValues(alpha: 0.5),
           width: 1,
@@ -464,7 +588,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         priority.displayName,
         style: TextStyle(
           color: Color(priority.colorValue),
-          fontSize: 10,
+          fontSize: fontSize,
           fontWeight: FontWeight.w600,
         ),
       ),

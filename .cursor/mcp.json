@@ -8,7 +8,7 @@
 				"task-master-ai"
 			],
 			"env": {
-				"GOOGLE_API_KEY": "AIzaSyBdwG3Ne0WeTnuSz_FnEd1aI3tXOXZshP8"
+				"GOOGLE_API_KEY": "AIzaSyBdwG3Ne0WeTnuSz_FnEd1aI3tXOXZshP8" // replace with your key this key not work
 			}
 		}
 	}

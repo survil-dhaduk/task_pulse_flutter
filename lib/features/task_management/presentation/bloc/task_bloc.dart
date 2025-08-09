@@ -113,7 +113,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     final result = await deleteTask.call(event.taskId);
 
-    result.fold((failure) => emit(TaskError(failure.message)), (_) async {
+   await result.fold((failure)async => emit(TaskError(failure.message)), (_) async {
       // Refresh the task list after successful deletion
       final refreshResult = await getTasks.call();
       refreshResult.fold(

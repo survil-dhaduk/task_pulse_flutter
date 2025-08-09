@@ -644,9 +644,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   void _onDeleteTask(Task task) {
+    final parentContext = context;
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+      context: parentContext,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Task'),
         content: Text('Are you sure you want to delete "${task.title}"?'),
         actions: [
@@ -657,7 +658,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.read<TaskBloc>().add(DeleteTask(task.id));
+              parentContext.read<TaskBloc>().add(DeleteTask(task.id));
             },
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,

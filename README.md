@@ -82,8 +82,82 @@ flutter build ios --release
 
 ## 📱 Screenshots
 
-<!-- Add screenshots here when available -->
-*Screenshots will be added to the `/screenshots` directory*
+Task Pulse offers a modern, intuitive interface with Material Design 3 principles. Here are some key screens showcasing the app's features:
+
+### 🌟 Main Interface & Task Management
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/task list screen with task.png" width="200" alt="Task List Screen with Tasks"/><br/>
+      <sub><b>📋 Task List Screen</b></sub><br/>
+      <sub>Main interface showing tasks with priority indicators</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/create:edit task screen .png" width="200" alt="Create and Edit Task Screen"/><br/>
+      <sub><b>✏️ Create/Edit Task</b></sub><br/>
+      <sub>Comprehensive task creation and editing interface</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/mark task as done list task screen.png" width="200" alt="Mark Task as Done"/><br/>
+      <sub><b>✅ Task Completion</b></sub><br/>
+      <sub>Easy task completion with visual feedback</sub>
+    </td>
+  </tr>
+</table>
+
+### 🎯 Task Actions & Management
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/task delete and edit button option.png" width="200" alt="Task Delete and Edit Options"/><br/>
+      <sub><b>⚙️ Task Actions</b></sub><br/>
+      <sub>Quick access to edit and delete task options</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/delete task alert dialog.png" width="200" alt="Delete Task Confirmation"/><br/>
+      <sub><b>🗑️ Delete Confirmation</b></sub><br/>
+      <sub>Safety dialog for task deletion confirmation</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/date and priority shorting option.png" width="200" alt="Date and Priority Sorting"/><br/>
+      <sub><b>📅 Date & Priority Sort</b></sub><br/>
+      <sub>Sorting options by date and priority levels</sub>
+    </td>
+  </tr>
+</table>
+
+### 🎨 Themes & Filtering
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/light theme with empty task screen.png" width="200" alt="Light Theme Empty Screen"/><br/>
+      <sub><b>☀️ Light Theme</b></sub><br/>
+      <sub>Clean, bright interface with empty state</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/darktheme empty screen.png" width="200" alt="Dark Theme Empty Screen"/><br/>
+      <sub><b>🌙 Dark Theme</b></sub><br/>
+      <sub>Modern dark mode with empty state design</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/task type shortin option.png" width="200" alt="Task Type Sorting Options"/><br/>
+      <sub><b>🔍 Task Type Filter</b></sub><br/>
+      <sub>Advanced filtering and sorting by task type</sub>
+    </td>
+  </tr>
+</table>
+
+### ✨ Key Highlights
+
+- **🌓 Adaptive Theming**: Beautiful light and dark mode themes
+- **📱 Responsive Design**: Optimized for all screen sizes and orientations
+- **⚡ Intuitive Actions**: Quick edit, delete, and completion actions
+- **🔔 Smart Notifications**: Contextual reminders and alerts
+- **📊 Advanced Sorting**: Sort by date, priority, and task type
+- **🎯 Priority Management**: Visual priority system for better organization
 
 ## 🏗️ Architecture
 

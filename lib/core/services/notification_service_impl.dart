@@ -5,6 +5,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../features/task_management/domain/entities/task.dart';
+import '../constants/app_strings.dart';
 import 'notification_service.dart';
 
 /// Concrete implementation using flutter_local_notifications
@@ -26,13 +27,13 @@ class NotificationServiceImpl implements NotificationService {
         final String localTimeZone =
             tz.local.name; // triggers tz initialization
         // ignore: avoid_print
-        print('Timezone initialized: $localTimeZone');
+        print(AppStrings.timezoneInitialized(localTimeZone));
       } catch (_) {
         // noop if already initialized
       }
 
       const AndroidInitializationSettings androidInit =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
+          AndroidInitializationSettings(AppStrings.androidNotificationIcon);
 
       final DarwinInitializationSettings iosInit = DarwinInitializationSettings(
         requestAlertPermission: false,
@@ -50,9 +51,9 @@ class NotificationServiceImpl implements NotificationService {
 
       // Create Android notification channel
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
-        'task_channel',
-        'Task Notifications',
-        description: 'Notifications for task reminders',
+        AppStrings.taskChannel,
+        AppStrings.taskNotifications,
+        description: AppStrings.taskNotificationDescription,
         importance: Importance.high,
       );
 
@@ -64,7 +65,7 @@ class NotificationServiceImpl implements NotificationService {
     } catch (e) {
       // Swallow exceptions in test or unsupported environments
       // ignore: avoid_print
-      print('NotificationService.initialize skipped: $e');
+      print(AppStrings.notificationServiceSkipped(e.toString()));
     }
   }
 
@@ -84,7 +85,7 @@ class NotificationServiceImpl implements NotificationService {
       return true;
     } catch (e) {
       // ignore: avoid_print
-      print('Notification permission request skipped: $e');
+      print(AppStrings.notificationPermissionSkipped(e.toString()));
       return false;
     }
   }
@@ -102,9 +103,9 @@ class NotificationServiceImpl implements NotificationService {
 
     const NotificationDetails details = NotificationDetails(
       android: AndroidNotificationDetails(
-        'task_channel',
-        'Task Notifications',
-        channelDescription: 'Notifications for task reminders',
+        AppStrings.taskChannel,
+        AppStrings.taskNotifications,
+        channelDescription: AppStrings.taskNotificationDescription,
         importance: Importance.high,
         priority: Priority.high,
       ),

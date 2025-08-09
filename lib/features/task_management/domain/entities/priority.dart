@@ -1,3 +1,5 @@
+import '../../../../core/constants/app_strings.dart';
+
 /// Priority levels for tasks
 enum Priority {
   low,
@@ -8,11 +10,11 @@ enum Priority {
   String get displayName {
     switch (this) {
       case Priority.low:
-        return 'Low';
+        return AppStrings.lowPriority;
       case Priority.medium:
-        return 'Medium';
+        return AppStrings.mediumPriority;
       case Priority.high:
-        return 'High';
+        return AppStrings.highPriority;
     }
   }
 
@@ -27,4 +29,4 @@ enum Priority {
         return 0xFFF44336; // Red
     }
   }
-} 
+}

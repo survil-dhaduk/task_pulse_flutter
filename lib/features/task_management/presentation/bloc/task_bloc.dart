@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../domain/entities/priority.dart';
 import '../../domain/entities/task.dart';
@@ -56,7 +57,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     final currentState = state;
     if (currentState is TaskLoaded) {
       emit(
-        TaskOperationInProgress(currentState.tasks, hint: 'Creating task...'),
+        TaskOperationInProgress(
+          currentState.tasks,
+          hint: AppStrings.creatingTask,
+        ),
       );
     }
 
@@ -82,13 +86,18 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     final currentState = state;
     if (currentState is TaskLoaded) {
       emit(
-        TaskOperationInProgress(currentState.tasks, hint: 'Updating task...'),
+        TaskOperationInProgress(
+          currentState.tasks,
+          hint: AppStrings.updatingTask,
+        ),
       );
     }
 
     final result = await updateTask.call(event.task);
 
-   await result.fold((failure) async=> emit(TaskError(failure.message)), (_) async {
+    await result.fold((failure) async => emit(TaskError(failure.message)), (
+      _,
+    ) async {
       // Reschedule notification after successful update
       await notificationService.cancelTaskNotification(event.task.id);
       await notificationService.scheduleTaskNotification(event.task);
@@ -107,13 +116,18 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     final currentState = state;
     if (currentState is TaskLoaded) {
       emit(
-        TaskOperationInProgress(currentState.tasks, hint: 'Deleting task...'),
+        TaskOperationInProgress(
+          currentState.tasks,
+          hint: AppStrings.deletingTask,
+        ),
       );
     }
 
     final result = await deleteTask.call(event.taskId);
 
-   await result.fold((failure)async => emit(TaskError(failure.message)), (_) async {
+    await result.fold((failure) async => emit(TaskError(failure.message)), (
+      _,
+    ) async {
       // Refresh the task list after successful deletion
       final refreshResult = await getTasks.call();
       refreshResult.fold(
@@ -133,7 +147,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       emit(
         TaskOperationInProgress(
           currentState.tasks,
-          hint: 'Toggling completion...',
+          hint: AppStrings.togglingCompletion,
         ),
       );
     }
@@ -180,7 +194,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       emit(
         TaskOperationInProgress(
           currentState.tasks,
-          hint: 'Filtering by priority...',
+          hint: AppStrings.filteringByPriority,
         ),
       );
     }
@@ -200,7 +214,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     final currentState = state;
     if (currentState is TaskLoaded) {
-      emit(TaskOperationInProgress(currentState.tasks, hint: 'Filtering...'));
+      emit(
+        TaskOperationInProgress(currentState.tasks, hint: AppStrings.filtering),
+      );
     }
 
     // Fetch all tasks then filter in-memory (repository provides helpers too)
@@ -218,7 +234,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
           filtered = tasks;
           break;
       }
-      emit(TaskLoaded(filtered, hint: 'filter: ${event.filter.name}'));
+      emit(
+        TaskLoaded(filtered, hint: AppStrings.filterHint(event.filter.name)),
+      );
     });
   }
 
@@ -248,25 +266,25 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     switch (event.sortOption) {
       case TaskSortOption.dueDateAsc:
         baseList.sort((a, b) => a.dueDate.compareTo(b.dueDate));
-        emit(TaskLoaded(baseList, hint: 'sorted: due date ↑'));
+        emit(TaskLoaded(baseList, hint: AppStrings.sortedDueDateAsc));
         break;
       case TaskSortOption.dueDateDesc:
         baseList.sort((a, b) => b.dueDate.compareTo(a.dueDate));
-        emit(TaskLoaded(baseList, hint: 'sorted: due date ↓'));
+        emit(TaskLoaded(baseList, hint: AppStrings.sortedDueDateDesc));
         break;
       case TaskSortOption.priorityHighFirst:
         baseList.sort(
           (a, b) =>
               priorityRank(b.priority).compareTo(priorityRank(a.priority)),
         );
-        emit(TaskLoaded(baseList, hint: 'sorted: priority high → low'));
+        emit(TaskLoaded(baseList, hint: AppStrings.sortedPriorityHighToLow));
         break;
       case TaskSortOption.priorityLowFirst:
         baseList.sort(
           (a, b) =>
               priorityRank(a.priority).compareTo(priorityRank(b.priority)),
         );
-        emit(TaskLoaded(baseList, hint: 'sorted: priority low → high'));
+        emit(TaskLoaded(baseList, hint: AppStrings.sortedPriorityLowToHigh));
         break;
     }
   }

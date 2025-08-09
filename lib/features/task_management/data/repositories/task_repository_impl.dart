@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart' hide Task;
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/services/hive_service.dart';
 import '../../domain/entities/priority.dart';
@@ -11,7 +12,7 @@ import '../models/task_model.dart';
 /// Implementation of TaskRepository using Hive for local persistence
 class TaskRepositoryImpl implements TaskRepository {
   final HiveService _hiveService;
-  static const String _taskBoxName = 'tasks';
+  static const String _taskBoxName = AppStrings.tasksBoxName;
 
   const TaskRepositoryImpl({required HiveService hiveService})
     : _hiveService = hiveService;
@@ -35,7 +36,7 @@ class TaskRepositoryImpl implements TaskRepository {
       final taskModel = box.get(id) as TaskModel?;
 
       if (taskModel == null) {
-        return Left(DatabaseFailure('Task not found'));
+        return Left(DatabaseFailure(AppStrings.taskNotFound));
       }
 
       return Right(taskModel.toEntity());
@@ -86,7 +87,7 @@ class TaskRepositoryImpl implements TaskRepository {
       final taskModel = box.get(id) as TaskModel?;
 
       if (taskModel == null) {
-        return Left(DatabaseFailure('Task not found'));
+        return Left(DatabaseFailure(AppStrings.taskNotFound));
       }
 
       final updatedTask = taskModel.copyWith(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/priority.dart';
 import '../../domain/entities/task.dart';
 import '../bloc/task_bloc.dart';
@@ -144,7 +145,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              widget.task != null ? 'Edit Task' : 'Create Task',
+              widget.task != null ? AppStrings.editTask : AppStrings.createTask,
               style: TextStyle(fontSize: isTablet ? 22 : null),
             ),
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -162,8 +163,8 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   SnackBar(
                     content: Text(
                       widget.task != null
-                          ? 'Task updated successfully!'
-                          : 'Task created successfully!',
+                          ? AppStrings.taskUpdatedSuccessfully
+                          : AppStrings.taskCreatedSuccessfully,
                     ),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
@@ -174,7 +175,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Error: ${state.message}'),
+                    content: Text(AppStrings.errorMessage(state.message)),
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ),
                 );
@@ -200,11 +201,11 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                   fontSize: isTablet ? 18 : null,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'Title',
+                                  labelText: AppStrings.title,
                                   labelStyle: TextStyle(
                                     fontSize: isTablet ? 16 : null,
                                   ),
-                                  hintText: 'Enter task title',
+                                  hintText: AppStrings.enterTaskTitle,
                                   hintStyle: TextStyle(
                                     fontSize: isTablet ? 16 : null,
                                   ),
@@ -220,7 +221,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter a title';
+                                    return AppStrings.pleaseEnterTitle;
                                   }
                                   return null;
                                 },
@@ -234,11 +235,11 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                   fontSize: isTablet ? 16 : null,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'Description',
+                                  labelText: AppStrings.description,
                                   labelStyle: TextStyle(
                                     fontSize: isTablet ? 16 : null,
                                   ),
-                                  hintText: 'Enter task description',
+                                  hintText: AppStrings.enterTaskDescription,
                                   hintStyle: TextStyle(
                                     fontSize: isTablet ? 16 : null,
                                   ),
@@ -255,7 +256,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                 maxLines: isTablet ? 4 : 3,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter a description';
+                                    return AppStrings.pleaseEnterDescription;
                                   }
                                   return null;
                                 },
@@ -279,7 +280,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Due Date & Time',
+                                        AppStrings.dueDateAndTime,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium
@@ -356,7 +357,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Priority',
+                                        AppStrings.priority,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium
@@ -434,8 +435,8 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                       )
                                     : Text(
                                         widget.task != null
-                                            ? 'Update Task'
-                                            : 'Create Task',
+                                            ? AppStrings.updateTask
+                                            : AppStrings.createTask,
                                         style: TextStyle(
                                           fontSize: isTablet ? 18 : 16,
                                         ),

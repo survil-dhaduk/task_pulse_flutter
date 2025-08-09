@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/constants/app_strings.dart';
 import 'core/services/service_locator.dart';
 import 'features/task_management/presentation/bloc/task_bloc.dart';
 import 'features/task_management/presentation/pages/task_list_screen.dart';
@@ -20,7 +21,7 @@ class TaskPulseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TaskPulse',
+      title: AppStrings.appTitle,
       // Light theme
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

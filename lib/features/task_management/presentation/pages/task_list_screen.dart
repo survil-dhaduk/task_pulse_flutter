@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/priority.dart';
 import '../../domain/entities/task.dart';
 import '../bloc/task_bloc.dart';
@@ -75,7 +76,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         return Scaffold(
           appBar: AppBar(
             title: const Text(
-              'TaskPulse',
+              AppStrings.appName,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -118,7 +119,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Error',
+                        AppStrings.error,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               color: Theme.of(context).colorScheme.error,
@@ -140,7 +141,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         onPressed: () {
                           context.read<TaskBloc>().add(LoadTasks());
                         },
-                        child: const Text('Retry'),
+                        child: const Text(AppStrings.retry),
                       ),
                     ],
                   ),
@@ -187,7 +188,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         context,
                       ).colorScheme.surfaceContainerHighest,
                       child: Text(
-                        "Search: '${state.query}' — ${state.tasks.length} result(s)",
+                        AppStrings.searchResults(
+                          state.query,
+                          state.tasks.length,
+                        ),
                         style: Theme.of(context).textTheme.labelMedium,
                         textAlign: TextAlign.left,
                       ),
@@ -233,7 +237,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ],
                 );
               } else {
-                return const Center(child: Text('No tasks available'));
+                return const Center(child: Text(AppStrings.noTasksAvailable));
               }
             },
           ),
@@ -266,13 +270,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
       textInputAction: TextInputAction.search,
       style: TextStyle(fontSize: isTablet ? 16 : 14),
       decoration: InputDecoration(
-        hintText: 'Search tasks...',
+        hintText: AppStrings.searchTasks,
         hintStyle: TextStyle(fontSize: isTablet ? 16 : 14),
         prefixIcon: Icon(Icons.search, size: isTablet ? 24 : 20),
         suffixIcon: _searchController.text.isEmpty
             ? null
             : IconButton(
-                tooltip: 'Clear',
+                tooltip: AppStrings.clearTooltip,
                 icon: Icon(Icons.clear, size: isTablet ? 24 : 20),
                 onPressed: _clearSearch,
               ),
@@ -291,17 +295,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   PopupMenuButton<TaskStatusFilter> _buildFilterMenu() {
     return PopupMenuButton<TaskStatusFilter>(
-      tooltip: 'Filter',
+      tooltip: AppStrings.filterTooltip,
       icon: const Icon(Icons.filter_list),
       onSelected: (filter) {
         context.read<TaskBloc>().add(FilterTasksByStatus(filter));
       },
       itemBuilder: (context) => const [
-        PopupMenuItem(value: TaskStatusFilter.all, child: Text('All')),
-        PopupMenuItem(value: TaskStatusFilter.pending, child: Text('Pending')),
+        PopupMenuItem(value: TaskStatusFilter.all, child: Text(AppStrings.all)),
+        PopupMenuItem(
+          value: TaskStatusFilter.pending,
+          child: Text(AppStrings.pending),
+        ),
         PopupMenuItem(
           value: TaskStatusFilter.completed,
-          child: Text('Completed'),
+          child: Text(AppStrings.completed),
         ),
       ],
     );
@@ -309,7 +316,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   PopupMenuButton<TaskSortOption> _buildSortMenu() {
     return PopupMenuButton<TaskSortOption>(
-      tooltip: 'Sort',
+      tooltip: AppStrings.sortTooltip,
       icon: const Icon(Icons.sort),
       onSelected: (option) {
         context.read<TaskBloc>().add(SortTasks(option));
@@ -317,19 +324,19 @@ class _TaskListScreenState extends State<TaskListScreen> {
       itemBuilder: (context) => const [
         PopupMenuItem(
           value: TaskSortOption.dueDateAsc,
-          child: Text('Due date ↑'),
+          child: Text(AppStrings.dueDateAscending),
         ),
         PopupMenuItem(
           value: TaskSortOption.dueDateDesc,
-          child: Text('Due date ↓'),
+          child: Text(AppStrings.dueDateDescending),
         ),
         PopupMenuItem(
           value: TaskSortOption.priorityHighFirst,
-          child: Text('Priority high → low'),
+          child: Text(AppStrings.priorityHighToLow),
         ),
         PopupMenuItem(
           value: TaskSortOption.priorityLowFirst,
-          child: Text('Priority low → high'),
+          child: Text(AppStrings.priorityLowToHigh),
         ),
       ],
     );
@@ -353,7 +360,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No tasks yet',
+              AppStrings.noTasksYet,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
                 fontSize: isTablet ? 28 : null,
@@ -363,7 +370,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24),
               child: Text(
-                'Tap the + button to create your first task',
+                AppStrings.createFirstTaskHint,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.outline,
                   fontSize: isTablet ? 16 : null,
@@ -432,14 +439,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
             icon: Icons.edit,
-            label: 'Edit',
+            label: AppStrings.edit,
           ),
           SlidableAction(
             onPressed: (_) => _onDeleteTask(task),
             backgroundColor: Theme.of(context).colorScheme.error,
             foregroundColor: Theme.of(context).colorScheme.onError,
             icon: Icons.delete,
-            label: 'Delete',
+            label: AppStrings.delete,
           ),
         ],
       ),
@@ -540,7 +547,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                 ),
                               ),
                               child: Text(
-                                'OVERDUE',
+                                AppStrings.overdue,
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       color: Theme.of(
@@ -618,9 +625,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
     final tomorrow = today.add(const Duration(days: 1));
 
     if (dueDateOnly.isAtSameMomentAs(today)) {
-      return 'Today at ${DateFormat('HH:mm').format(dueDate)}';
+      return AppStrings.todayAt(DateFormat('HH:mm').format(dueDate));
     } else if (dueDateOnly.isAtSameMomentAs(tomorrow)) {
-      return 'Tomorrow at ${DateFormat('HH:mm').format(dueDate)}';
+      return AppStrings.tomorrowAt(DateFormat('HH:mm').format(dueDate));
     } else {
       return DateFormat('MMM dd, yyyy HH:mm').format(dueDate);
     }
@@ -648,12 +655,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
     showDialog(
       context: parentContext,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: Text('Are you sure you want to delete "${task.title}"?'),
+        title: const Text(AppStrings.deleteTaskTitle),
+        content: Text(AppStrings.deleteTaskConfirmation(task.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text(AppStrings.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -663,7 +670,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: const Text(AppStrings.delete),
           ),
         ],
       ),

@@ -44,3 +44,4 @@ Wrap the `ListView.builder` with a `BlocBuilder` to listen to the `TaskBloc`'s s
 ### Description: Implement Material Design 3 components for a modern UI.
 ### Details:
 Use Material Design 3 components (e.g., `Card`, `ListTile`, `IconButton`) to style the task list UI. Ensure that the UI adheres to Material Design 3 guidelines for visual appearance and user experience.
+

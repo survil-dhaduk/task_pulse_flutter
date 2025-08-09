@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/services/notification_service.dart';
 import '../../domain/usecases/usecases.dart' as usecases;
 import 'task_event.dart';
 import 'task_state.dart';
@@ -13,6 +14,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final usecases.ToggleTaskCompletion toggleTaskCompletion;
   final usecases.SearchTasks searchTasks;
   final usecases.GetTasksByPriority getTasksByPriority;
+  final NotificationService notificationService;
 
   TaskBloc({
     required this.getTasks,
@@ -22,6 +24,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     required this.toggleTaskCompletion,
     required this.searchTasks,
     required this.getTasksByPriority,
+    required this.notificationService,
   }) : super(const TaskLoading()) {
     on<LoadTasks>(_onLoadTasks);
     on<CreateTask>(_onCreateTask);
@@ -53,7 +56,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     final result = await createTask.call(event.task);
 
-    result.fold((failure) => emit(TaskError(failure.message)), (_) async {
+    await result.fold((failure) async => emit(TaskError(failure.message)), (_) async {
+      // Schedule notification after successful creation
+      await notificationService.scheduleTaskNotification(event.task);
+
       // Refresh the task list after successful creation
       final refreshResult = await getTasks.call();
       refreshResult.fold(
@@ -73,6 +79,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     final result = await updateTask.call(event.task);
 
     result.fold((failure) => emit(TaskError(failure.message)), (_) async {
+      // Reschedule notification after successful update
+      await notificationService.cancelTaskNotification(event.task.id);
+      await notificationService.scheduleTaskNotification(event.task);
+
       // Refresh the task list after successful update
       final refreshResult = await getTasks.call();
       refreshResult.fold(
@@ -113,7 +123,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     final result = await toggleTaskCompletion.call(event.taskId);
 
-    result.fold((failure) => emit(TaskError(failure.message)), (_) async {
+    await result.fold((failure) async => emit(TaskError(failure.message)), (_) async {
       // Refresh the task list after successful toggle
       final refreshResult = await getTasks.call();
       refreshResult.fold(

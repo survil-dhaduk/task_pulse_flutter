@@ -33,32 +33,33 @@ class TaskRepositoryImpl implements TaskRepository {
 Write unit tests to verify that `TaskRepositoryImpl` correctly interacts with Hive, stores and retrieves data accurately, and handles potential errors.
 
 # Subtasks:
-## 1. Define TaskRepository Interface [pending]
+## 1. Define TaskRepository Interface [done]
 ### Dependencies: None
 ### Description: Create `task_repository.dart` in `lib/features/task_management/domain/repositories/` and define the `TaskRepository` interface with methods for task data interaction.
 ### Details:
 Define methods like `createTask`, `readTask`, `updateTask`, `deleteTask`, and `toggleTaskCompletion` within the `TaskRepository` interface.
 
-## 2. Implement TaskRepositoryImpl with Hive [pending]
+## 2. Implement TaskRepositoryImpl with Hive [done]
 ### Dependencies: None
 ### Description: Create `task_repository_impl.dart` in `lib/features/task_management/data/repositories/` and implement the `TaskRepository` interface using Hive for local persistence.
 ### Details:
 Implement the methods defined in `TaskRepository` using Hive to store and retrieve task data. Inject `HiveService`.
 
-## 3. Implement Create Task Method [pending]
+## 3. Implement Create Task Method [done]
 ### Dependencies: None
 ### Description: Implement the `createTask` method in `TaskRepositoryImpl` to persist a new task to Hive.
 ### Details:
 Use Hive's box operations to add a new task object to the designated Hive box.
 
-## 4. Implement Read, Update, Delete, and Toggle Methods [pending]
+## 4. Implement Read, Update, Delete, and Toggle Methods [done]
 ### Dependencies: None
 ### Description: Implement the `readTask`, `updateTask`, `deleteTask`, and `toggleTaskCompletion` methods in `TaskRepositoryImpl` using Hive.
 ### Details:
 Use Hive's box operations to read, update, delete, and toggle the completion status of tasks based on their unique identifiers.
 
-## 5. Handle Hive Exceptions [pending]
+## 5. Handle Hive Exceptions [done]
 ### Dependencies: None
 ### Description: Implement error handling within `TaskRepositoryImpl` to catch and manage potential Hive exceptions.
 ### Details:
 Wrap Hive operations in try-catch blocks to handle exceptions and return appropriate `Failure` objects (e.g., `DatabaseFailure`).
+

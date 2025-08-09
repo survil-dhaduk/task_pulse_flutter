@@ -14,6 +14,8 @@ import '../../features/task_management/presentation/bloc/task_bloc.dart';
 import 'hive_adapters.dart';
 import 'hive_service.dart';
 import 'hive_service_impl.dart';
+import 'notification_service.dart';
+import 'notification_service_impl.dart';
 
 /// Service Locator instance for dependency injection
 final sl = GetIt.instance;
@@ -44,8 +46,11 @@ Future<void> _registerCoreServices() async {
   // Register HiveService
   sl.registerSingleton<HiveService>(HiveServiceImpl());
 
-  // TODO: Register NotificationService when implemented
-  // sl.registerSingleton<NotificationService>(NotificationServiceImpl());
+  // Register NotificationService
+  final notificationService = NotificationServiceImpl();
+  await notificationService.initialize();
+  await notificationService.requestPermission();
+  sl.registerSingleton<NotificationService>(notificationService);
 }
 
 /// Register repositories
@@ -94,6 +99,7 @@ Future<void> _registerBLoCs() async {
       toggleTaskCompletion: sl(),
       searchTasks: sl(),
       getTasksByPriority: sl(),
+      notificationService: sl(),
     ),
   );
 }

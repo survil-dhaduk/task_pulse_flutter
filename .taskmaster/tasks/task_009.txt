@@ -1,6 +1,6 @@
 # Task ID: 9
 # Title: Implement Local Notifications
-# Status: pending
+# Status: done
 # Dependencies: 8
 # Priority: medium
 # Description: Implement local notifications using the `flutter_local_notifications` package to schedule reminders for task due dates. Configure the notification settings and schedule notifications when tasks are created or updated.

@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.techbusiness.taskpulse.task_pulse"
     compileSdk = flutter.compileSdkVersion       // Flutter’s compileSdk (recommended)
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.techbusiness.taskpulse.task_pulse"

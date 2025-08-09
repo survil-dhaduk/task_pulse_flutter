@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -19,11 +21,42 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
+
   @override
   void initState() {
     super.initState();
     // Load tasks when the screen is initialized
     context.read<TaskBloc>().add(LoadTasks());
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    // Rebuild to update the clear icon visibility
+    setState(() {});
+
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        context.read<TaskBloc>().add(const LoadTasks());
+      } else {
+        context.read<TaskBloc>().add(SearchTasks(trimmed));
+      }
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {});
+    context.read<TaskBloc>().add(const LoadTasks());
   }
 
   @override
@@ -45,6 +78,33 @@ class _TaskListScreenState extends State<TaskListScreen> {
           _buildSortMenu(),
           const SizedBox(width: 8),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: 'Search tasks...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: 'Clear',
+                        icon: const Icon(Icons.clear),
+                        onPressed: _clearSearch,
+                      ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                isDense: true,
+                filled: true,
+              ),
+            ),
+          ),
+        ),
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
@@ -103,6 +163,35 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     ),
                   ),
                 Expanded(child: _buildTaskList(state.tasks)),
+              ],
+            );
+          } else if (state is TaskSearchResults) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Text(
+                    "Search: '${state.query}' — ${state.tasks.length} result(s)",
+                    style: Theme.of(context).textTheme.labelMedium,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                Expanded(child: _buildTaskList(state.tasks)),
+              ],
+            );
+          } else if (state is TaskSearching) {
+            return Stack(
+              children: [
+                _buildTaskList(state.tasks),
+                Container(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
               ],
             );
           } else if (state is TaskOperationInProgress) {
